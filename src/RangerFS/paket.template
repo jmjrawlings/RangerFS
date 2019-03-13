@@ -1,0 +1,29 @@
+type file
+id RangerFS
+title
+    RangerFS
+owners
+    Justin Rawlings
+authors 
+    Justin Rawlings
+projectUrl
+    https://github.com/jmjrawlings/RangerFS/jmjrawlings/RangerFS
+iconUrl
+    https://raw.githubusercontent.com/jmjrawlings/RangerFS/master/docs/files/img/logo.png
+licenseUrl
+    https://github.com/jmjrawlings/RangerFS/jmjrawlings/RangerFS/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+language
+    F#
+copyright
+    Copyright 2017
+tags
+    FSharp dotnetcore intervals csharp dotnet
+summary
+    Intervals for .NET
+description
+    A library for generic interval arithmetic
+
+files
+	../../bin/RangerFS ==> lib
