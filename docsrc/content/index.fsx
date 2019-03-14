@@ -1,42 +1,65 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin/RangerFS/netstandard2.0"
+#I "../../bin/RangerFS/net47"
 
 (**
 RangerFS
 ======================
 
-Documentation
+Generic Intervals for .NET
 
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The RangerFS library can be <a href="https://nuget.org/packages/RangerFS">installed from NuGet</a>:
+      RangerFS library can be <a href="https://nuget.org/packages/RangerFS">installed from NuGet</a>:
       <pre>PM> Install-Package RangerFS</pre>
     </div>
   </div>
   <div class="span1"></div>
 </div>
 
-Example
+Using RangerFS with Paket
+------------------------
+
+Since RangerFS is a single-file module, it can be referenced using [Paket GitHub dependencies][deps].
+To do so, add following line to your `paket.dependencies` file:
+
+    github jmjrawlings/RangerFS src/RangerFS/Range.fs
+
+and following line to your `paket.references` file for the desired project:
+
+    File:Range.fs . 
+
+
+F# QuickStart
 -------
-
-This example demonstrates using a function defined in this sample library.
-
 *)
+
 #r "RangerFS.dll"
 open Ranger
 open Ranger.Operators
 
+(** Test *)
 let a = 0 <=> 10
 let b = 5 <=> 15
 let c = Range.intersection a b
-printfn "The intersection of %O and %O is %O" a b c
+(*** include-value: c ***)
+
+//printfn "The intersection of %O and %O is %O" a b c
+
+(** Another Test *)
+open System
+
+(*** define-output:fortnite ***)
+let fortnite = 
+  Range.ofBounds -7 7
+  |> Range.map float
+  |> Range.map TimeSpan.FromDays
+  |> Range.map ((+) DateTime.Now)
 
 (**
-Some more info
 
 Samples & documentation
 -----------------------
