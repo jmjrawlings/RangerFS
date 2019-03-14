@@ -186,11 +186,16 @@ module Range =
     /// Construct a Range of a single value
     [<CompiledName("Create")>]
     let ofPoint (p: 't) : 't Range =
-        Point_ p
+        if isNull p
+        then Empty_
+        else Point_ p
 
     /// Construct a Range that spans the given bounds
     [<CompiledName("Create")>]
-    let ofBounds (lo: 't) (hi: 't) : 't Range =    
+    let ofBounds (lo: 't) (hi: 't) : 't Range =
+        if      isNull lo then ofPoint hi
+        else if isNull hi then ofPoint lo    
+        else    
         match cmp lo hi with
         | LT -> Range_ (lo, hi)
         | EQ -> Point_ lo
@@ -202,7 +207,7 @@ module Range =
         ofBounds lo hi
 
     /// Construct a Range that is non empty only if lo <= hi
-    let internal ofOrdered (lo: 't) (hi: 't) : 't Range =    
+    let internal ofOrdered (lo: 't) (hi: 't) : 't Range =        
         match cmp lo hi with
         | LT -> Range_ (lo, hi)
         | EQ -> Point_ lo

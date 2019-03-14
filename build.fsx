@@ -313,7 +313,7 @@ Target.create "Docs" (fun _ ->
             let key = layoutRootsAll.Keys |> Seq.tryFind (fun i -> langSpecificPath(i, dir))
             match key with
             | Some lang -> layoutRootsAll.[lang]
-            | None -> layoutRootsAll.["en"] // "en" is the default language
+            | None -> layoutRootsAll.["en"]
 
         FSFormatting.createDocs (fun args ->
             { args with
