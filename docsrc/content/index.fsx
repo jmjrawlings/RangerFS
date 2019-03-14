@@ -1,7 +1,7 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../../bin/RangerFS/netstandard2.0"
 
 (**
 RangerFS
@@ -27,9 +27,13 @@ This example demonstrates using a function defined in this sample library.
 
 *)
 #r "RangerFS.dll"
-open RangerFS
+open Ranger
+open Ranger.Operators
 
-printfn "hello = %i" <| Library.hello 0
+let a = 0 <=> 10
+let b = 5 <=> 15
+let c = Range.intersection a b
+printfn "The intersection of %O and %O is %O" a b c
 
 (**
 Some more info
