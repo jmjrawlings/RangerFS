@@ -186,16 +186,11 @@ module Range =
     /// Construct a Range of a single value
     [<CompiledName("Create")>]
     let ofPoint (p: 't) : 't Range =
-        if isNull p
-        then Empty_
-        else Point_ p
+        Point_ p
 
     /// Construct a Range that spans the given bounds
     [<CompiledName("Create")>]
     let ofBounds (lo: 't) (hi: 't) : 't Range =
-        if      isNull lo then ofPoint hi
-        else if isNull hi then ofPoint lo    
-        else    
         match cmp lo hi with
         | LT -> Range_ (lo, hi)
         | EQ -> Point_ lo
@@ -613,7 +608,7 @@ type Extensions =
     /// Create a Range of the single point
      static member ToRange (point: 't) : 't Range =  
         Range.ofPoint point
-
+        
     [<Extension>]    
     /// Create a Range between the given points
      static member ToRange (a: 't, b: 't) : 't Range =  
