@@ -57,7 +57,6 @@ printfn "a=%O\nb=%O\nc=%O\nd=%O\ne=%O\nf=%O" a b c d e f
 
 (** Transforming Ranges *)
 
-(*** define-output:fortnite ***)
 let aFortnite = 
   Range.ofBounds -1 1
   |> Range.map ((*) 7)
@@ -65,9 +64,13 @@ let aFortnite =
   |> Range.map TimeSpan.FromDays
   |> Range.map ((+) DateTime.Now)
   
-printfn "The fortnight around today is %O" aFortnite
-printfn "The duration of said fortnite is %O" (Range.size aFortnite)
-(*** include-it: fornite ***)
+(*** define-output: a ***)
+printf "The fortnight around today is %O" aFortnite
+(*** include-output: a ***)
+
+(*** define-output: b ***)
+printf "The duration of said fortnite is %O" (Range.size aFortnite)
+(*** include-output: b ***)
 
 (**
 
