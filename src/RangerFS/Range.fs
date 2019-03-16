@@ -12,6 +12,8 @@ type IRangeProvider<'t when 't: comparison> =
     abstract member Range : 't Range
 
 [<Struct>]
+[<CustomComparison>]
+[<StructuralEquality>]
 [<StructuredFormatDisplay("{Description}")>]
 /// A Range representing the values between a Lower and Upper Bound
 type Range<'t when 't : comparison> = 
@@ -39,6 +41,28 @@ type Range<'t when 't : comparison> =
 
     interface IRangeProvider<'t> with
         member this.Range = this
+
+    /// Ranges are ordered by consider LowerBound first then UpperBound
+    interface IComparable<'t Range> with
+        member this.CompareTo(that: 't Range) =
+            if this.IsEmpty 
+                then -1
+            else if that.IsEmpty 
+                then 1
+            else 
+                let lo = Compare.cmp this.Lo that.Lo
+                let hi = Compare.cmp this.Hi that.Hi
+                let cmp = 
+                    match (lo, hi) with
+                    | Compare.LT, _  
+                    | Compare.EQ, Compare.LT ->
+                        Compare.LT
+                    | Compare.EQ, Compare.EQ -> 
+                        Compare.EQ
+                    | _ ->
+                        Compare.GT
+
+                cmp.Value                       
 
 
 // And Item and its associated Range
@@ -118,9 +142,12 @@ module private Compare =
     
     [<Struct>]
     type Comparison =
-        | LT 
-        | GT 
-        | EQ 
+        | LT | GT | EQ 
+        member this.Value = 
+            match this with
+            | LT -> -1
+            | GT -> 1
+            | EQ -> 0
 
     let inline max a b =
         if a > b then a else b
