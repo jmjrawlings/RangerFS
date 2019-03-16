@@ -13,6 +13,7 @@ open Fake.DotNet
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
+open Fake.IO.Globbing
 open Fake.DotNet.Testing
 open Fake.Tools
 open Fake.Api
@@ -288,40 +289,85 @@ let copyFiles () =
 Target.create "Docs" (fun _ ->
     File.delete "docsrc/content/release-notes.md"
     Shell.copyFile "docsrc/content/" "RELEASE_NOTES.md"
-    Shell.rename "docsrc/content/release-notes.md" "docsrc/content/RELEASE_NOTES.md"
+    Shell.rename 
+        "docsrc/content/release-notes.md"
+        "docsrc/content/RELEASE_NOTES.md"
 
     File.delete "docsrc/content/license.md"
     Shell.copyFile "docsrc/content/" "LICENSE.txt"
-    Shell.rename "docsrc/content/license.md" "docsrc/content/LICENSE.txt"
+    Shell.rename 
+        "docsrc/content/license.md"
+        "docsrc/content/LICENSE.txt"
 
-
-    DirectoryInfo.getSubDirectories (DirectoryInfo.ofPath templates)
-    |> Seq.iter (fun d ->
-                    let name = d.Name
-                    if name.Length = 2 || name.Length = 3 then
-                        layoutRootsAll.Add(
-                                name, [templates @@ name
-                                       formatting @@ "templates"
-                                       formatting @@ "templates/reference" ]))
+    templates
+    |> DirectoryInfo.ofPath
+    |> DirectoryInfo.getSubDirectories
+    |> Seq.iter (fun dir ->
+        let name = dir.Name
+        if name.Length = 2 || name.Length = 3 then
+            layoutRootsAll.Add(
+                    name, [templates  @@ name
+                           formatting @@ "templates"
+                           formatting @@ "templates/reference" ]))                          
     copyFiles ()
 
     for dir in  [ content; ] do
+
         let langSpecificPath(lang, path:string) =
             path.Split([|'/'; '\\'|], System.StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists(fun i -> i = lang)
+
         let layoutRoots =
             let key = layoutRootsAll.Keys |> Seq.tryFind (fun i -> langSpecificPath(i, dir))
             match key with
             | Some lang -> layoutRootsAll.[lang]
             | None -> layoutRootsAll.["en"]
 
-        FSFormatting.createDocs (fun args ->
-            { args with
+        let arguments : FSFormatting.LiterateArguments =
+            { FSFormatting.defaultLiterateArguments with
                 Source = content
                 OutputDirectory = output
                 LayoutRoots = layoutRoots
                 ProjectParameters  = ("root", root)::info
-                Template = docTemplate } )
+                Template = docTemplate }
+
+        // Have to hack in the -fseEvaluator param to get snippets to work properly
+        let layoutroots =
+            if arguments.LayoutRoots.IsEmpty then []
+            else [ "--layoutRoots" ] @ arguments.LayoutRoots
+        let source = arguments.Source
+        let template = arguments.Template
+        let outputDir = arguments.OutputDirectory
+
+        let command = 
+            arguments.ProjectParameters
+            |> Seq.collect (fun (k, v) -> [ k; v ])
+            |> Seq.append 
+                   (["literate"; "--processdirectory" ] 
+                    @ layoutroots 
+                    @ [ "--inputdirectory"; source; 
+                        "--templatefile"; template; 
+                        "--outputDirectory"; outputDir; 
+                        "--fsieval"; "true";
+                        "--replacements" ])
+            |> Seq.map (fun s -> 
+                   if s.StartsWith "\"" then s
+                   else sprintf "\"%s\"" s)
+            |> String.separated " "
+
+        let toolPath =
+            Tools.findToolInSubPath 
+                "fsformatting.exe"
+                (Directory.GetCurrentDirectory() @@ "tools" @@ "FSharp.Formatting.CommandTool" @@ "tools")
+    
+        if 0 <> Process.execSimple ((fun info ->
+            { info with
+                FileName = toolPath
+                Arguments = command }) >> Process.withFramework) System.TimeSpan.MaxValue
+        then 
+            failwithf "FSharp.Formatting %s failed." command
+
+
 )
 
 // --------------------------------------------------------------------------------------
