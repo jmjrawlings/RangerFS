@@ -18,16 +18,6 @@ open Fake.DotNet.Testing
 open Fake.Tools
 open Fake.Api
 
-// --------------------------------------------------------------------------------------
-// START TODO: Provide project-specific details below
-// --------------------------------------------------------------------------------------
-
-// Information about the project are used
-//  - for version and project name in generated AssemblyInfo file
-//  - by the generated NuGet package
-//  - to run tests and to publish documentation on GitHub gh-pages
-//  - for documentation, you also need to edit info in "docsrc/tools/generate.fsx"
-
 // The name of the project
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
 let project = "RangerFS"
@@ -69,23 +59,21 @@ let gitRaw = Environment.environVarOrDefault "gitRaw" "https://raw.githubusercon
 let website = "/RangerFS"
 
 // --------------------------------------------------------------------------------------
-// END TODO: The rest of the file includes standard build steps
+// The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
 
 // Read additional information from the release notes document
 let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Helper active pattern for project types
-let (|Fsproj|Csproj|Vbproj|Shproj|) (projFileName:string) =
+let (|Fsproj|Csproj|) (projFileName:string) =
     match projFileName with
     | f when f.EndsWith("fsproj") -> Fsproj
     | f when f.EndsWith("csproj") -> Csproj
-    | f when f.EndsWith("vbproj") -> Vbproj
-    | f when f.EndsWith("shproj") -> Shproj
     | _                           -> failwith (sprintf "Project file %s not supported. Unknown project type." projFileName)
 
 // Generate assembly info files with the right version & up-to-date information
-Target.create "AssemblyInfo" (fun _ ->
+Target.create "AssemblyInfo" <| fun _ ->
     let getAssemblyInfoAttributes projectName =
         [ AssemblyInfo.Title (projectName)
           AssemblyInfo.Product project
@@ -108,47 +96,42 @@ Target.create "AssemblyInfo" (fun _ ->
         match projFileName with
         | Fsproj -> AssemblyInfoFile.createFSharp (folderName </> "AssemblyInfo.fs") attributes
         | Csproj -> AssemblyInfoFile.createCSharp ((folderName </> "Properties") </> "AssemblyInfo.cs") attributes
-        | Vbproj -> AssemblyInfoFile.createVisualBasic ((folderName </> "My Project") </> "AssemblyInfo.vb") attributes
-        | Shproj -> ()
         )
-)
+
 
 // Copies binaries from default VS location to expected bin folder
 // But keeps a subdirectory structure for each project in the
 // src folder to support multiple project outputs
-Target.create "CopyBinaries" (fun _ ->
+Target.create "CopyBinaries" <| fun _ ->
     !! "src/**/*.??proj"
     -- "src/**/*.shproj"
     |>  Seq.map (fun f -> ((Path.getDirectory f) </> "bin" </> configuration, "bin" </> (Path.GetFileNameWithoutExtension f)))
     |>  Seq.iter (fun (fromDir, toDir) -> Shell.copyDir toDir fromDir (fun _ -> true))
-)
+
 
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-let buildConfiguration = DotNet.Custom <| Environment.environVarOrDefault "configuration" configuration
+let buildConfiguration = 
+    configuration
+    |> Environment.environVarOrDefault "configuration" 
+    |> DotNet.Custom 
 
-Target.create "Clean" (fun _ ->
+Target.create "Clean" <| fun _ ->
     Shell.cleanDirs ["bin"; "temp"]
-)
 
-Target.create "CleanDocs" (fun _ ->
+Target.create "CleanDocs" <| fun _ ->
     Shell.cleanDirs ["docs"]
-)
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target.create "Restore" (fun _ ->
+Target.create "Restore" <| fun _ ->
     solutionFile
     |> DotNet.restore id
-)
 
-Target.create "Build" (fun _ ->
-    (*solutionFile
-    |> DotNet.build (fun p ->
-        { p with
-            Configuration = buildConfiguration })*)
+Target.create "Build" <| fun _ ->
+
     let setParams (defaults:MSBuildParams) =
         { defaults with
             Verbosity = Some(Quiet)
@@ -161,12 +144,11 @@ Target.create "Build" (fun _ ->
                 ]
          }
     MSBuild.build setParams solutionFile
-)
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
-Target.create "RunTests" (fun _ ->
+Target.create "RunTests" <| fun _ ->
     let assemblies = !! testAssemblies
 
     let setParams f =
@@ -186,25 +168,29 @@ Target.create "RunTests" (fun _ ->
     )
     |>Seq.reduce (+)
     |> (fun i -> if i > 0 then failwith "")
-)
+    
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target.create "NuGet" (fun _ ->
-    Paket.pack(fun p ->
+Target.create "NuGet" <| fun _ ->
+
+    let args (p: Paket.PaketPackParams) =
         { p with
             OutputPath = "bin"
             Version = release.NugetVersion
-            ReleaseNotes = String.toLines release.Notes})
-)
+            ReleaseNotes = String.toLines release.Notes}
 
-Target.create "PublishNuget" (fun _ ->
-    Paket.push(fun p ->
+    Paket.pack args
+    
+Target.create "PublishNuget" <| fun _ ->
+
+    let args (p: Paket.PaketPushParams) =
         { p with
             PublishUrl = "https://www.nuget.org"
-            WorkingDir = "bin" })
-)
+            WorkingDir = "bin" }
+
+    Paket.push args            
 
 
 // --------------------------------------------------------------------------------------
@@ -239,7 +225,7 @@ layoutRootsAll.Add("en",[   templates;
                             formatting @@ "templates"
                             formatting @@ "templates/reference" ])
 
-Target.create "ReferenceDocs" (fun _ ->
+Target.create "ReferenceDocs" <| fun _ ->
     Directory.ensure (output @@ "reference")
 
     let binaries () =
@@ -277,7 +263,7 @@ Target.create "ReferenceDocs" (fun _ ->
             ProjectParameters =  ("root", root)::info
             SourceRepository = githubLink @@ "tree/master" }
            )
-)
+
 
 let copyFiles () =
     Shell.copyRecursive files output true
@@ -286,7 +272,7 @@ let copyFiles () =
     Shell.copyRecursive (formatting @@ "styles") (output @@ "content") true
     |> Trace.logItems "Copying styles and scripts: "
 
-Target.create "Docs" (fun _ ->
+Target.create "Docs" <| fun _ ->
     File.delete "docsrc/content/release-notes.md"
     Shell.copyFile "docsrc/content/" "RELEASE_NOTES.md"
     Shell.rename 
@@ -367,8 +353,6 @@ Target.create "Docs" (fun _ ->
         then 
             failwithf "FSharp.Formatting %s failed." command
 
-
-)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
