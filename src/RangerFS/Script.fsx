@@ -1,8 +1,8 @@
-// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
-// for more guidance on F# programming.
-
 #load "Range.fs"
-open RangerFS
+open Ranger
+open Ranger.Operators
 
-let num = Library.hello 42
-printfn "%i" num
+let a = (0 <=> 10)
+let b = -a
+let c = -b
+let d= Range.union a b

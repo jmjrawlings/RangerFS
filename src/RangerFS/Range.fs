@@ -12,11 +12,10 @@ type IRangeProvider<'t when 't: comparison> =
     abstract member Range : 't Range
 
 [<Struct>]
-[<NoComparison>]
 [<StructuredFormatDisplay("{Description}")>]
 /// A Range representing the values between a Lower and Upper Bound
 type Range<'t when 't : comparison> = 
-    internal
+    private
     | Empty_
     | Point_ of 't
     | Range_ of a:'t * b: 't    
@@ -33,10 +32,10 @@ type Range<'t when 't : comparison> =
     /// Returns true if the Range contains a single value
     member this.IsPoint = Range.isPoint this
 
+    member private this.Description = Range.show this
+
     override this.ToString() =
         Range.show this
-
-    member this.Description = Range.show this
 
     interface IRangeProvider<'t> with
         member this.Range = this
@@ -315,6 +314,20 @@ module Range =
     let disjoint (a: 't Range) (b: 't Range) : bool =
         not (intersects a b)
 
+    /// Returns true of the given Ranges do not intersect
+    [<CompiledName("Iterate")>]
+    let iterate (step: 't -> 't) (r: 't Range) : 't seq =
+        if r.IsEmpty 
+        then Seq.empty
+        else 
+            let mutable x = r.Lo
+            let hi = r.Hi
+            seq {
+                while x < r.Hi do
+                yield x
+                x <- step x
+            }
+
     /// Apply the given functions to the lower and upper bounds of the Range
     let map2 (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
         match r with
@@ -428,6 +441,9 @@ type Range<'t when 't:comparison> with
     static member inline (-) (a, b) =
        Range.sub a (Range.ofPoint b)
 
+    static member inline (~-) (a) =
+       Range.map (~-) a
+
     static member inline (*) (a, b) =
        Range.mul a b
 
@@ -439,6 +455,11 @@ type Range<'t when 't:comparison> with
 
     static member inline (/) (a, b) =
        Range.div a (Range.ofPoint b)
+
+    /// Iterate over the range with the given step function
+    member this.Iterate(range: 't Range, step: Func<'t,'t>) : 't seq =
+        let step' = FuncConvert.FromFunc step
+        Range.iterate step' range
     
     /// Map the given function to both bounds of the range
     member this.Map(range: 't Range, f: Func<'t,'u>) : 'u Range = 

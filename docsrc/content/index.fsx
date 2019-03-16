@@ -32,55 +32,10 @@ and following line to your `paket.references` file for the desired project:
 
     File:Range.fs . 
 
-
-F# QuickStart
--------
-*)
-
-(** Ranges can be constructed in a variety of ways of any type implementing IComparable *)
-(*** define-output:simple ***)
-#r "RangerFS.dll"
-open System
-open Ranger
-open Ranger.Operators
-
-let a = Range.ofBounds 0 10
-let b = Range.ofPoint 10000000L
-let c = Range.ofSeq [3.2m; 2.8m; 1.04m; -9.42m; ]
-let d = DateTime.Now |> Range.ofSize (TimeSpan.FromHours 3.) 
-let e = -2.5 <=> 2.5 
-let f = 'a' <=> 'z'
-
-printf 
-  "a = %O\nb = %O\nc = %O\nd = %O\ne = %O\nf = %O"
-  a b c d e f  
-(** Results in *)
-(*** include-output:simple ***)
-
-(** Transforming Ranges *)
-(*** define-output:a ***) 
-let aFortnight : DateTime Range = 
-  Range.ofBounds -7 7
-  |> Range.map float 
-  |> Range.map TimeSpan.FromDays
-  |> Range.map ((+) DateTime.Today)
-
-printf """
-  Fortnight = %O
-  Duration = %O
-  """ aFortnight (Range.size aFortnight)
-(*** include-output:a ***)
-
-(**
-
 Samples & documentation
 -----------------------
 
-The library comes with comprehensible documentation. 
-It can include tutorials automatically generated from `*.fsx` files in [the content folder][content]. 
-The API reference is automatically generated from Markdown comments in the library implementation.
-
- * [Tutorial](tutorial.html) contains a further explanation of this sample library.
+ * [Tutorial](tutorial.html) contains more detailed examples.
 
  * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
    and functions in the library. This includes additional brief samples on using most of the
