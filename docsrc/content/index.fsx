@@ -37,27 +37,37 @@ F# QuickStart
 -------
 *)
 
+(** Constructing Ranges *)
+
 #r "RangerFS.dll"
+open System
 open Ranger
 open Ranger.Operators
 
-(** Test *)
-let a = 0 <=> 10
-let b = 5 <=> 15
-let c = Range.intersection a b
-(*** include-value: c ***)
+(*** define-output: simple ***)
+let a = Range.ofBounds 0 10
+let b = Range.ofPoint 5L
+let c = Range.ofSeq [1; 2; 3; -100; 50]
+let d = DateTime.Now |> Range.ofSize (TimeSpan.FromHours 3.) 
+let e = -2.5 <=> 2.5 // Custom operator
+let f = 'a' <=> 'z'
 
-//printfn "The intersection of %O and %O is %O" a b c
+printfn "a=%O\nb=%O\nc=%O\nd=%O\ne=%O\nf=%O" a b c d e f
+(*** include-it: simple ***)
 
-(** Another Test *)
-open System
+(** Transforming Ranges *)
 
 (*** define-output:fortnite ***)
-let fortnite = 
-  Range.ofBounds -7 7
+let aFortnite = 
+  Range.ofBounds -1 1
+  |> Range.map ((*) 7)
   |> Range.map float
   |> Range.map TimeSpan.FromDays
   |> Range.map ((+) DateTime.Now)
+  
+printfn "The fortnight around today is %O" aFortnite
+printfn "The duration of said fortnite is %O" (Range.size aFortnite)
+(*** include-it: fornite ***)
 
 (**
 

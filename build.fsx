@@ -225,7 +225,9 @@ layoutRootsAll.Add("en",[   templates;
                             formatting @@ "templates"
                             formatting @@ "templates/reference" ])
 
-Target.create "ReferenceDocs" <| fun _ ->
+
+let createReferenceDocs () =                            
+
     Directory.ensure (output @@ "reference")
 
     let binaries () =
@@ -272,7 +274,12 @@ let copyFiles () =
     Shell.copyRecursive (formatting @@ "styles") (output @@ "content") true
     |> Trace.logItems "Copying styles and scripts: "
 
-Target.create "Docs" <| fun _ ->
+
+Target.create "ReferenceDocs" <| fun _ ->
+    createReferenceDocs ()
+
+
+let createDocs () =
     File.delete "docsrc/content/release-notes.md"
     Shell.copyFile "docsrc/content/" "RELEASE_NOTES.md"
     Shell.rename 
@@ -352,6 +359,35 @@ Target.create "Docs" <| fun _ ->
                 Arguments = command }) >> Process.withFramework) System.TimeSpan.MaxValue
         then 
             failwithf "FSharp.Formatting %s failed." command
+
+Target.create "Docs" <| fun _ ->
+    createDocs ()
+
+Target.create "WatchDocs" <| fun _ ->    
+
+    use watcher = new FileSystemWatcher(DirectoryInfo("docsrc/content").FullName,"*.fsx")
+
+    watcher.EnableRaisingEvents <- true
+
+    let handler (e: FileSystemEventArgs) =
+        (e.ChangeType, e.Name)
+        ||> sprintf "Change %O of %s"
+        |> Trace.traceImportant
+        |> ignore
+        
+        createDocs()
+
+    watcher.Changed.Add handler
+    watcher.Created.Add handler
+    watcher.Renamed.Add handler
+    watcher.Deleted.Add handler
+
+    Trace.traceImportant "Waiting for help edits. Press any key to stop."
+
+    System.Console.ReadKey() |> ignore
+
+    watcher.EnableRaisingEvents <- false
+    watcher.Dispose()
 
 
 // --------------------------------------------------------------------------------------
