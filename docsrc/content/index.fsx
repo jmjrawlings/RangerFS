@@ -37,36 +37,39 @@ F# QuickStart
 -------
 *)
 
-(** Constructing Ranges *)
+(** Ranges can be constructed in a variety of ways of any type implementing IComparable *)
+(*** define-output:simple ***)
 #r "RangerFS.dll"
 open System
 open Ranger
 open Ranger.Operators
 
 let a = Range.ofBounds 0 10
-let b = Range.ofPoint 5L
-let c = Range.ofSeq [1; 2; 3; -100; 50]
+let b = Range.ofPoint 10000000L
+let c = Range.ofSeq [3.2m; 2.8m; 1.04m; -9.42m; ]
 let d = DateTime.Now |> Range.ofSize (TimeSpan.FromHours 3.) 
 let e = -2.5 <=> 2.5 
 let f = 'a' <=> 'z'
 
-(*** define-output:simple ***)
-printf "a=%O\nb=%O\nc=%O\nd=%O\ne=%O\nf=%O" a b c d e f
+printf 
+  "a = %O\nb = %O\nc = %O\nd = %O\ne = %O\nf = %O"
+  a b c d e f  
+(** Results in *)
 (*** include-output:simple ***)
 
 (** Transforming Ranges *)
-let aFortnite = 
-  DateTime.Now
-  |> Range.ofPoint
-  |> Range.buffer (TimeSpan.FromDays 7.)
-
 (*** define-output:a ***) 
-printf "The fortnight around today is %O" aFortnite
-(*** include-output:a ***)
+let aFortnight : DateTime Range = 
+  Range.ofBounds -7 7
+  |> Range.map float 
+  |> Range.map TimeSpan.FromDays
+  |> Range.map ((+) DateTime.Today)
 
-(*** define-output:b ***)
-printf "The duration of said fortnite is %O" (Range.size aFortnite)
-(*** include-it:b ***)
+printf """
+  Fortnight = %O
+  Duration = %O
+  """ aFortnight (Range.size aFortnight)
+(*** include-output:a ***)
 
 (**
 
