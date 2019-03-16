@@ -38,7 +38,6 @@ F# QuickStart
 *)
 
 (** Constructing Ranges *)
-(*** define-output: simple ***)
 #r "RangerFS.dll"
 open System
 open Ranger
@@ -51,20 +50,23 @@ let d = DateTime.Now |> Range.ofSize (TimeSpan.FromHours 3.)
 let e = -2.5 <=> 2.5 
 let f = 'a' <=> 'z'
 
+(*** define-output:simple ***)
 printf "a=%O\nb=%O\nc=%O\nd=%O\ne=%O\nf=%O" a b c d e f
-(*** include-it: simple ***)
+(*** include-output:simple ***)
 
 (** Transforming Ranges *)
-(*** define-output: a ***)
 let aFortnite = 
   DateTime.Now
   |> Range.ofPoint
   |> Range.buffer (TimeSpan.FromDays 7.)
- 
+
+(*** define-output:a ***) 
 printf "The fortnight around today is %O" aFortnite
-(*** define-output: b ***)
+(*** include-output:a ***)
+
+(*** define-output:b ***)
 printf "The duration of said fortnite is %O" (Range.size aFortnite)
-(*** include-output: b ***)
+(*** include-it:b ***)
 
 (**
 
