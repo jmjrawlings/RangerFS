@@ -10,7 +10,7 @@ open Prelude
 
 #nowarn "0686"
 
-module Creation =
+module ConstructionTests =
 
     let make<'t when 't:comparison> () : Test = 
 
@@ -48,10 +48,11 @@ module Creation =
             make<char>()
             make<float>()
             make<float32>()
+            make<BoundedInt>()
         ]        
 
 
-module Logic = 
+module LogicTests = 
 
     let make<'t when 't:comparison> () : Test =
 
@@ -146,10 +147,11 @@ module Logic =
             make<char>()
             make<float>()
             make<single>()
+            make<BoundedInt>()
         ]                
 
 
-module Delta = 
+module DeltaTests = 
 
     [<Tests>]
     let tests =
@@ -168,9 +170,10 @@ module Delta =
             testProp "int16" test<Int16, Int16>
             testProp "int32" test<Int32, Int32>
             testProp "int64" test<Int64, int64>
+            testProp "custom" test<BoundedInt, BoundedInt>
         ]
 
-module Relations = 
+module RelationTests = 
 
     let x = 1
     let o = 0
@@ -297,29 +300,23 @@ module Relations =
 
         ]
 
-module Inline =
+module InlineTests =
 
     [<Tests>]
     let tests =
         testList "inline" [
+
             testCase "addition works " <| fun () ->
-                let a =
-                    (2.0 <=> 3.0)
-
-                let b = a + (Range.ofPoint 0.5)
-                    
-
-                Expect.equal b (2.5 <=> 3.5) ""
-
+                let a = 2.0 <=> 3.0
+                let b = a + !0.5
+                let c = 2.5 <=> 3.5
+                Expect.equal b c ""
 
             testCase "subtraction works " <| fun () ->
-                let a =
-                    (5.0 <=> -5.0)
-
+                let a = 5.0 <=> -5.0
                 let b = a - 0.5
-
-                Expect.equal b (-5.5 <=> 4.5) ""
-
+                let c = -5.5 <=> 4.5
+                Expect.equal b c ""
 
             testCase "multiplication works" <| fun () ->
                 let a =

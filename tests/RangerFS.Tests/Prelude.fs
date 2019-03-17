@@ -5,6 +5,57 @@ open FsCheck
 open Ranger
 open System
 
+/// Example of a custom type for use in ranges
+type BoundedInt(n: int) =
+    let value = 
+        if n < -100 then -100
+        else if n > 100 then 100
+        else n
+
+    member __.Value = value
+
+    interface IComparable with
+        member this.CompareTo obj = 
+            match obj with
+            | :? BoundedInt as that ->
+                this.Value.CompareTo that.Value
+            | _ ->
+                failwith "Not an object"
+
+    interface IComparable<BoundedInt> with
+        member this.CompareTo that =
+            this.Value.CompareTo that.Value
+
+    interface IEquatable<BoundedInt> with
+        
+        member this.Equals that =
+            this.Value = that.Value
+
+    override this.Equals obj =
+        match obj with
+        | :? BoundedInt as that ->
+            this.Value = that.Value
+        | _ -> false
+            
+    override this.GetHashCode() =
+        this.Value.GetHashCode()
+
+    static member (+) (a: BoundedInt, b: BoundedInt) =
+        BoundedInt(a.Value + b.Value)
+
+    static member (-) (a: BoundedInt, b: BoundedInt) =
+        BoundedInt(a.Value - b.Value)
+
+    static member (*) (a: BoundedInt, b: BoundedInt) =
+        BoundedInt(a.Value * b.Value)
+
+    static member (/) (a: BoundedInt, b: BoundedInt) =
+        BoundedInt(a.Value / b.Value)
+
+    static member (~-) (a: BoundedInt) =
+        BoundedInt(-a.Value)
+
+
 [<AutoOpen>]
 module Prelude = 
 
