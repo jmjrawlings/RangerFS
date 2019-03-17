@@ -42,27 +42,18 @@ type Range<'t when 't : comparison> =
     interface IRangeProvider<'t> with
         member this.Range = this
 
-    /// Ranges are ordered by consider LowerBound first then UpperBound
-    interface IComparable<'t Range> with
-        member this.CompareTo(that: 't Range) =
-            if this.IsEmpty 
-                then -1
-            else if that.IsEmpty 
-                then 1
-            else 
-                let lo = Compare.cmp this.Lo that.Lo
-                let hi = Compare.cmp this.Hi that.Hi
-                let cmp = 
-                    match (lo, hi) with
-                    | Compare.LT, _  
-                    | Compare.EQ, Compare.LT ->
-                        Compare.LT
-                    | Compare.EQ, Compare.EQ -> 
-                        Compare.EQ
-                    | _ ->
-                        Compare.GT
+    interface IComparable with
+        member this.CompareTo(that) =
+            match that with
+            | :? Range<'t> as r -> 
+                Range.compare this r
+            | _ ->
+                failwith "Object was not a Range"                
+            
 
-                cmp.Value                       
+    interface IComparable<'t Range> with
+        member this.CompareTo(that) = 
+            Range.compare this that
 
 
 // And Item and its associated Range
@@ -451,6 +442,25 @@ module Range =
     let inline sub a b = combine (-) a b
     let inline mul a b = combine (*) a b
     let inline div a b = combine (/) a b
+
+    /// Ranges are ordered by LowerBound first then UpperBound
+    let compare this that : int = 
+        if this.IsEmpty       then -1
+        else if that.IsEmpty  then 1
+        else 
+            let lo = Compare.cmp this.Lo that.Lo
+            let hi = Compare.cmp this.Hi that.Hi
+            let cmp = 
+                match (lo, hi) with
+                | Compare.LT, _  
+                | Compare.EQ, Compare.LT ->
+                    Compare.LT
+                | Compare.EQ, Compare.EQ -> 
+                    Compare.EQ
+                | _ ->
+                    Compare.GT
+
+            cmp.Value                       
 
 
 /// Operator support
