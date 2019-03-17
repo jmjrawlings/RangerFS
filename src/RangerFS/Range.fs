@@ -129,6 +129,7 @@ module Operators =
     let (++) a b  = Range.union a b
     let (--) a b  = Range.difference a b
 
+/// Helper functions for comparisons
 module private Compare = 
     
     [<Struct>]
@@ -140,6 +141,9 @@ module private Compare =
             | GT -> 1
             | EQ -> 0
 
+    let inline eq a b = 
+         a = b          
+        
     let inline max a b =
         if a > b then a else b
 
@@ -167,6 +171,7 @@ module Range =
         | Range_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
 
     /// Return the low value of the Range 
+    [<CompiledName("Lo")>]
     let lo (r: 't Range) : 't =
         match r with
         | Range_ (x, _) 
@@ -174,6 +179,7 @@ module Range =
         | Empty_ -> raise EmptyRangeException
 
     /// Return the high value of the range
+    [<CompiledName("Hi")>]
     let hi (r: 't Range) : 't =
         match r with
         | Range_ (_, x) 
@@ -186,6 +192,7 @@ module Range =
         r.Hi - r.Lo
 
     /// Returns true if the given range is Empty
+    [<CompiledName("IsEmpty")>]
     let isEmpty (r: 't Range) : bool = 
         r = Empty_
 
@@ -241,6 +248,11 @@ module Range =
     [<CompiledName("Zero")>]
     let inline zero () = 
         ofPoint LanguagePrimitives.GenericZero
+
+    /// Returns the Zero range
+    [<CompiledName("One")>]
+    let inline one () = 
+        ofPoint LanguagePrimitives.GenericOne
 
     /// Returns the relation from x to y
     [<CompiledName("Relation")>]
@@ -332,19 +344,32 @@ module Range =
     let disjoint (a: 't Range) (b: 't Range) : bool =
         not (intersects a b)
 
-    /// Returns true of the given Ranges do not intersect
+    /// Iterate over the Range with the given step function
     [<CompiledName("Iterate")>]
     let iterate (step: 't -> 't) (r: 't Range) : 't seq =
-        if r.IsEmpty 
-        then Seq.empty
-        else 
-            let mutable x = r.Lo
-            let hi = r.Hi
-            seq {
-                while x < r.Hi do
-                yield x
-                x <- step x
-            }
+        if r.IsEmpty then Seq.empty else 
+
+        let mutable x = r.Lo
+        let hi = r.Hi
+        seq { while x <= hi do
+              yield x
+              x <- step x }
+
+    /// Iterate over the Range by the given Step Amount
+    [<CompiledName("Iterate")>]
+    let inline step delta (r: 't Range) : 't seq =
+        iterate ((+) delta) r
+
+    /// Iterate with a step of (range.Size / n)
+    [<CompiledName("Partition")>]
+    let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
+        if r.IsEmpty then Seq.empty else
+
+        let delta = (Range.size r) / n
+        r
+        |> step delta
+        |> Seq.pairwise
+        |> Seq.map (fun (a,b) -> ofBounds a b)
 
     /// Apply the given functions to the lower and upper bounds of the Range
     let map2 (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
@@ -463,7 +488,7 @@ module Range =
             cmp.Value                       
 
 
-/// Operator support
+/// Operator support and Member Access
 type Range<'t when 't:comparison> with
 
     static member inline (+) (a, b) =
@@ -481,6 +506,9 @@ type Range<'t when 't:comparison> with
     static member inline (~-) (a) =
        Range.map (~-) a
 
+    static member inline (~+) (a) =
+       Range.map (~+) a
+
     static member inline (*) (a, b) =
        Range.mul a b
 
@@ -492,6 +520,15 @@ type Range<'t when 't:comparison> with
 
     static member inline (/) (a, b) =
        Range.div a (Range.ofPoint b)
+
+    static member inline (%) (a, b) =
+       Range.combine (%) a b
+
+    static member inline (%) (a, b) =
+       Range.combine (%) a (Range.ofPoint b)
+
+    static member inline Abs r =
+        Range.map abs r
 
     /// Iterate over the range with the given step function
     member this.Iterate(range: 't Range, step: Func<'t,'t>) : 't seq =
