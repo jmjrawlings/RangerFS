@@ -255,15 +255,15 @@ module Range =
     let inline one () = 
         ofPoint LanguagePrimitives.GenericOne
 
-    /// Returns the relation from x to y
+    /// Returns the relation from a to b
     [<CompiledName("Relation")>]
-    let relation (x: 't Range) (y: 't Range) : Relation =    
-        match (x, y) with
+    let relation (a: 't Range) (b: 't Range) : Relation =    
+        match (a, b) with
         | Empty_, Empty_ -> Relation.Equal
         | Empty_, _ -> Relation.Empty
         | _, Empty_ -> Relation.Empty
         | _, _->
-            match (cmp x.Lo y.Lo, cmp x.Hi y.Hi) with
+            match (cmp a.Lo b.Lo, cmp a.Hi b.Hi) with
             
             | EQ, EQ -> Relation.Equal
             | EQ, LT -> Relation.Starts
@@ -273,12 +273,12 @@ module Range =
             | LT, GT -> Relation.Contains
             | GT, LT -> Relation.Within
 
-            | LT, LT when x.Hi = y.Lo -> Relation.MeetsStart
-            | LT, LT when x.Hi > y.Lo -> Relation.OverlapsStart
+            | LT, LT when a.Hi = b.Lo -> Relation.MeetsStart
+            | LT, LT when a.Hi > b.Lo -> Relation.OverlapsStart
             | LT, LT -> Relation.Before
 
-            | GT, GT when x.Lo = y.Hi -> Relation.MeetsEnd
-            | GT, GT when x.Lo < y.Hi -> Relation.OverlapsEnd
+            | GT, GT when a.Lo = b.Hi -> Relation.MeetsEnd
+            | GT, GT when a.Lo < b.Hi -> Relation.OverlapsEnd
             | GT, GT -> Relation.After 
 
     /// Returns the union of two Ranges
@@ -303,18 +303,17 @@ module Range =
 
     /// Returns the union of many ranges
     [<CompiledName("UnionMany")>]
-    let unionMany (xs: 't Range seq) : 't Range = 
-        Seq.fold union empty xs
+    let unionMany (ranges: 't Range seq) : 't Range = 
+        Seq.fold union empty ranges
 
     /// Returns the intersection of the given ranges
     [<CompiledName("Intersection")>]
     let intersection (a: 't Range) (b: 't Range) : 't Range = 
-        if a.IsEmpty || b.IsEmpty 
-        then empty
-        else 
-            let lo = max a.Lo b.Lo
-            let hi = min a.Hi b.Hi
-            lo <~> hi
+        if a.IsEmpty || b.IsEmpty  then empty else 
+    
+        let lo = max a.Lo b.Lo
+        let hi = min a.Hi b.Hi
+        lo <~> hi
 
     /// Returns true if b does not exceed the bounds of a
     [<CompiledName("Contains")>]
@@ -464,11 +463,6 @@ module Range =
         a |> bind (fun a' -> 
             b |> map (fun b' -> f a' b'))
 
-    let inline add a b = combine (+) a b
-    let inline sub a b = combine (-) a b
-    let inline mul a b = combine (*) a b
-    let inline div a b = combine (/) a b
-
     /// Ranges are ordered by LowerBound first then UpperBound
     let compare this that : int = 
         if this.IsEmpty       then -1
@@ -492,35 +486,35 @@ module Range =
 /// Operator support and Member Access
 type Range<'t when 't:comparison> with
 
-    static member inline (+) (a, b) =
-       Range.add a b
-
-    static member inline (+) (a, b) =
-       Range.add a (Range.ofPoint b)
-
-    static member inline (-) (a, b) =
-       Range.sub a b
-
-    static member inline (-) (a, b) =
-       Range.sub a (Range.ofPoint b)
-
     static member inline (~-) (a) =
        Range.map (~-) a
 
     static member inline (~+) (a) =
        Range.map (~+) a
 
-    static member inline (*) (a, b) =
-       Range.mul a b
+    static member inline (+) (a, b) =
+       Range.combine (+) a b
+
+    static member inline (+) (a, b) =
+       Range.combine (+) a (Range.ofPoint b)
+
+    static member inline (-) (a, b) =
+       Range.combine (-) a b
+
+    static member inline (-) (a, b) =
+       Range.combine (-) a (Range.ofPoint b)
 
     static member inline (*) (a, b) =
-       Range.mul a (Range.ofPoint b)
+       Range.combine (*) a b
+
+    static member inline (*) (a, b) =
+       Range.combine (*) a (Range.ofPoint b)
 
     static member inline (/) (a, b) =
-       Range.div a b
+       Range.combine (/) a b
 
     static member inline (/) (a, b) =
-       Range.div a (Range.ofPoint b)
+       Range.combine (/) a (Range.ofPoint b)
 
     static member inline (%) (a, b) =
        Range.combine (%) a b
@@ -581,98 +575,98 @@ type Range<'t when 't:comparison> with
         this.Relation(Range.ofPoint b, inverse)
     
     /// Check if the relationship holds between the two ranges
-    member inline this.Is(relation:Relation, that: 't Range) : bool =
+    member inline this.HasRelation(relation:Relation, that: 't Range) : bool =
        this.Relation(that) = relation
     
     /// Check if the relationship holds between the two ranges
-    member inline this.Is(relation:Relation, point: 't) : bool =
-       this.Is(relation, Range.ofPoint point)
+    member inline this.HasRelation(relation:Relation, point: 't) : bool =
+       this.HasRelation(relation, Range.ofPoint point)
     
     /// Returns true if RangeRelation.Before holds
     member inline this.Before(that: 't Range) : bool =
-       this.Is(Relation.Before, that)
+       this.HasRelation(Relation.Before, that)
     
     /// Returns true if RangeRelation.After holds
      member inline this.After(that: 't Range) : bool =
-        this.Is(Relation.After, that)
+        this.HasRelation(Relation.After, that)
     
     /// Returns true if RangeRelation.Starts holds
      member inline this.Starts(that: 't Range) : bool =
-        this.Is(Relation.Starts, that)
+        this.HasRelation(Relation.Starts, that)
     
     /// Returns true if RangeRelation.StartedBy holds
      member inline this.StartedBy(that: 't Range) : bool =
-        this.Is(Relation.StartedBy, that)
+        this.HasRelation(Relation.StartedBy, that)
     
     /// Returns true if RangeRelation.Finishes holds
      member inline this.Finishes(r, that: 't Range) : bool =
-        this.Is(Relation.Finishes, that)
+        this.HasRelation(Relation.Finishes, that)
     
     /// Returns true if RangeRelation.FinishedBy holds
      member inline this.FinishedBy(that: 't Range) : bool =
-        this.Is(Relation.FinishedBy, that)
+        this.HasRelation(Relation.FinishedBy, that)
     
     /// Returns true if RangeRelation.MeetsStart holds
      member inline this.MeetsStart(that: 't Range) : bool =
-        this.Is(Relation.MeetsStart, that)
+        this.HasRelation(Relation.MeetsStart, that)
     
     /// Returns true if RangeRelation.MeetsEnd holds
      member inline this.MeetsEnd(that: 't Range) : bool =
-        this.Is(Relation.MeetsEnd, that)
+        this.HasRelation(Relation.MeetsEnd, that)
     
     /// Returns true if RangeRelation.OverlapsStart holds
      member inline this.OverlapsStart(that: 't Range) : bool =
-        this.Is(Relation.OverlapsStart, that)
+        this.HasRelation(Relation.OverlapsStart, that)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.OverlapsEnd(that: 't Range) : bool =
-        this.Is(Relation.OverlapsEnd, that)
+        this.HasRelation(Relation.OverlapsEnd, that)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.Before(point: 't) : bool =
-        this.Is(Relation.Before, Range.ofPoint point)
+        this.HasRelation(Relation.Before, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.After(point: 't) : bool =
-        this.Is(Relation.After, Range.ofPoint point)
+        this.HasRelation(Relation.After, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.Starts(point: 't) : bool =
-        this.Is(Relation.Starts, Range.ofPoint point)
+        this.HasRelation(Relation.Starts, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.StartedBy(point: 't) : bool =
-        this.Is(Relation.StartedBy, Range.ofPoint point)
+        this.HasRelation(Relation.StartedBy, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.Finishes(point: 't) : bool =
-        this.Is(Relation.Finishes, Range.ofPoint point)
+        this.HasRelation(Relation.Finishes, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.FinishedBy(point: 't) : bool =
-        this.Is(Relation.FinishedBy, Range.ofPoint point)
+        this.HasRelation(Relation.FinishedBy, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.MeetsStart(point: 't) : bool =
-        this.Is(Relation.MeetsStart, Range.ofPoint point)
+        this.HasRelation(Relation.MeetsStart, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.MeetsEnd(point: 't) : bool =
-        this.Is(Relation.MeetsEnd, Range.ofPoint point)
+        this.HasRelation(Relation.MeetsEnd, Range.ofPoint point)
     
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.OverlapsStart(point: 't) : bool =
-        this.Is(Relation.OverlapsStart, Range.ofPoint point)
+        this.HasRelation(Relation.OverlapsStart, Range.ofPoint point)
    
     /// Returns true if RangeRelation.OverlapsEnd holds
      member inline this.OverlapsEnd(point: 't) : bool =
-        this.Is(Relation.OverlapsEnd, Range.ofPoint point)
+        this.HasRelation(Relation.OverlapsEnd, Range.ofPoint point)
    
-    /// Returns true if RangeRelation.Before holds
+    /// Returns true if the given range does not exceed the bound of this range
      member inline this.Contains(that: 't Range) : bool =
         Range.contains this that
     
-    /// Returns true if the point does not lay outside this range
+    /// Returns true if the point does not exceed the bounds of this range
      member inline this.Contains(point: 't) : bool =
         Range.contains this (Range.ofPoint point)
     
