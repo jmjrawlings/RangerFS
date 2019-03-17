@@ -348,10 +348,10 @@ module Range =
     [<CompiledName("Iterate")>]
     let iterate (step: 't -> 't) (r: 't Range) : 't seq =
         if r.IsEmpty then Seq.empty else 
-
-        let mutable x = r.Lo
+        let lo = r.Lo
         let hi = r.Hi
-        seq { while x <= hi do
+        let mutable x = r.Lo
+        seq { while (x <= hi && x >= lo) do
               yield x
               x <- step x }
 

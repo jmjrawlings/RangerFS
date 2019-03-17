@@ -1,6 +1,7 @@
 ﻿using System;
 using Ranger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace RangeFS.CSharpTests
 {
@@ -11,8 +12,8 @@ namespace RangeFS.CSharpTests
         public void TestMethod1()
         {
             var a = (-10).ToRange(10);
-            var b = 0.ToRange().Buffer(10);
-            var (c, d) = b.Map(i => i * 10).Bisect(50);
+            var n = Range.Iterate<int, int>(-1, a).ToList();
+            Assert.IsTrue(n.Count == 1);
         }
     }
 }
