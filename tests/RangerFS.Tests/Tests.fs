@@ -202,17 +202,17 @@ module RelationTests =
 
             match (fwd, rev) with
             
-            | RangeRelation.Starts, RangeRelation.StartedBy 
-            | RangeRelation.Finishes, RangeRelation.FinishedBy
-            | RangeRelation.Empty, RangeRelation.Empty 
-            | RangeRelation.StartedBy, RangeRelation.Starts
-            | RangeRelation.FinishedBy, RangeRelation.Finishes -> true
+            | Relation.Starts, Relation.StartedBy 
+            | Relation.Finishes, Relation.FinishedBy
+            | Relation.Empty, Relation.Empty 
+            | Relation.StartedBy, Relation.Starts
+            | Relation.FinishedBy, Relation.Finishes -> true
 
-            | RangeRelation.Starts, _
-            | RangeRelation.StartedBy, _
-            | RangeRelation.FinishedBy, _
-            | RangeRelation.Finishes, _
-            | RangeRelation.Empty, _ -> false
+            | Relation.Starts, _
+            | Relation.StartedBy, _
+            | Relation.FinishedBy, _
+            | Relation.Finishes, _
+            | Relation.Empty, _ -> false
 
             | _ -> true
 
@@ -220,7 +220,7 @@ module RelationTests =
 
     let equal : Test =
         testProp "equals" <| fun (r : int Range) ->
-            (Range.relation r r) = RangeRelation.Equal
+            (Range.relation r r) = Relation.Equal
             
 
     [<Tests>]
@@ -231,72 +231,72 @@ module RelationTests =
             test 
                 [x;x;x;x;x;o;o;o]
                 [o;o;o;o;x;x;x;o]
-                RangeRelation.MeetsStart
+                Relation.MeetsStart
 
             test 
                 [o;o;o;x;x;x;x;o]
                 [x;x;x;x;o;o;o;o]
-                RangeRelation.MeetsEnd
+                Relation.MeetsEnd
 
             test 
                 [x;x;x;x;o;o;o;o]
                 [o;o;o;o;o;o;x;x]
-                RangeRelation.Before
+                Relation.Before
 
             test 
                 [o;o;o;o;o;o;x;x]
                 [x;x;x;x;o;o;o;o]
-                RangeRelation.After
+                Relation.After
 
             test 
                 [o;x;x;x;x;x;o;o]
                 [o;o;x;x;o;o;o;o]
-                RangeRelation.Contains
+                Relation.Contains
 
             test 
                 [o;o;x;x;o;o;o;o]
                 [o;x;x;x;x;o;o;o]
-                RangeRelation.Within
+                Relation.Within
 
             test 
                 [o;x;o;o;o;o;o;o]
                 [o;x;o;o;o;o;o;o]
-                RangeRelation.Equal
+                Relation.Equal
 
             test 
                 [x;x;x;o;o;o;o;o]
                 [o;x;x;x;x;o;o;o]
-                RangeRelation.OverlapsStart
+                Relation.OverlapsStart
 
             test 
                 [o;x;x;x;x;o;o;o]
                 [x;x;x;o;o;o;o;o]
-                RangeRelation.OverlapsEnd
+                Relation.OverlapsEnd
 
             test 
                 [o;x;x;x;x;o;o;o]
                 [o;x;x;x;x;x;o;o]
-                RangeRelation.Starts
+                Relation.Starts
 
             test 
                 [o;x;x;x;x;o;o;o]
                 [o;x;x;o;o;o;o;o]
-                RangeRelation.StartedBy
+                Relation.StartedBy
 
             test 
                 [o;o;o;o;x;x;o;o]
                 [o;x;x;x;x;x;o;o]
-                RangeRelation.Finishes
+                Relation.Finishes
 
             test 
                 [o;x;x;x;x;x;x;o]
                 [o;o;o;o;o;x;x;o]
-                RangeRelation.FinishedBy
+                Relation.FinishedBy
 
             test 
                 [o;x;o;o;o;o;o;o]
                 [o;o;o;o;o;o;o;o]
-                RangeRelation.Empty
+                Relation.Empty
 
         ]
 
