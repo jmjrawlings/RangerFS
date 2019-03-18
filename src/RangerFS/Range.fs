@@ -231,6 +231,11 @@ module Range =
         | EQ -> Point_ lo
         | GT -> Range_ (hi, lo)
 
+    /// ofSymmetric 3 = {-3..3}
+    [<CompiledName("OfSymmetric")>]
+    let inline ofSymmetric p =
+        ofBounds p -p
+
     /// Construct a Range that is non empty only if lo <= hi
     let internal ofOrdered (lo: 't) (hi: 't) : 't Range =        
         match cmp lo hi with

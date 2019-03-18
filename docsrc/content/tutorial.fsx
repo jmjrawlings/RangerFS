@@ -17,7 +17,7 @@ open Ranger
 open Ranger.Operators
 
 (**
-# A Simple Range
+# Constructing Ranges
 
 The primary constructor of `Range<'t>` is `Range.ofBounds` or it's operator equivalent `<=>`
 *)
@@ -34,16 +34,15 @@ printf "%O is equal to %O" a b
 let c = Range.ofBounds 2 10
 let d = Range.ofBounds 10 2
 
-printf "%O" (b = c)
+printf "%O" (c = d)
 (*** include-output:b ***)
 
-(** The special case where `range.Lo = range.Hi` can be constructed by
+(** The special case where `range.Lo = range.Hi` is referred to as a `Point` and can be constructed by
 `Range.ofPoint` or it's operator equivalent `!` *)
-
-(** define-output:c *)
+(*** define-output:c ***)
 let e = Range.ofPoint 2.5
-let f = Range.ofBounds 2.5 2.5
-let g = !2.5
+let f = !2.5
+let g = Range.ofBounds 2.5 2.5
 
 printf "%O = %O = %O" e f g 
 (*** include-output:c ***)
@@ -52,3 +51,6 @@ printf "%O = %O = %O" e f g
 (*** define-output:d ***)
 Range.ofSeq [ 7; 5; -2; -100; 50; 75]
 (*** include-output:d ***)
+(*** define-output:e ***)
+Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
+(*** include-output:e ***)
