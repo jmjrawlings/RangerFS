@@ -48,9 +48,8 @@ printf "%O = %O = %O" e f g
 (*** include-output:c ***)
 
 (** We can also construct a `Range` from a sequence of points with `Range.ofSeq` *)
-(*** define-output:d ***)
-Range.ofSeq [ 7; 5; -2; -100; 50; 75]
-(*** include-it:d ***)
-(*** define-output:e ***)
-Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
-(*** include-it:e ***)
+let h = Range.ofSeq [ 7; 5; -2; -100; 50; 75]
+(*** include-value:h ***)
+
+let i = Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
+(*** include-value:i ***)

@@ -97,14 +97,14 @@ the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespa
 <p>We can also construct a <code>Range</code> from a sequence of points with <code>Range.ofSeq</code></p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs4', 31)" onmouseover="showTip(event, 'fs4', 31)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 32)" onmouseover="showTip(event, 'fs14', 32)" class="id">ofSeq</span> <span class="pn">[</span> <span class="n">7</span><span class="pn">;</span> <span class="n">5</span><span class="pn">;</span> <span class="o">-</span><span class="n">2</span><span class="pn">;</span> <span class="o">-</span><span class="n">100</span><span class="pn">;</span> <span class="n">50</span><span class="pn">;</span> <span class="n">75</span><span class="pn">]</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 31)" onmouseover="showTip(event, 'fs14', 31)" class="id">h</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 32)" onmouseover="showTip(event, 'fs4', 32)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 33)" onmouseover="showTip(event, 'fs15', 33)" class="id">ofSeq</span> <span class="pn">[</span> <span class="n">7</span><span class="pn">;</span> <span class="n">5</span><span class="pn">;</span> <span class="o">-</span><span class="n">2</span><span class="pn">;</span> <span class="o">-</span><span class="n">100</span><span class="pn">;</span> <span class="n">50</span><span class="pn">;</span> <span class="n">75</span><span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
 <table class="pre"><tr><td><pre><code>{-100 .. 75}</code></pre></td></tr></table>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs4', 33)" onmouseover="showTip(event, 'fs4', 33)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="id">ofSeq</span> <span class="pn">[</span> <span class="s">&#39;a&#39;</span><span class="pn">;</span> <span class="s">&#39;b&#39;</span><span class="pn">;</span> <span class="s">&#39;q&#39;</span><span class="pn">;</span> <span class="s">&#39;z&#39;</span><span class="pn">;</span> <span class="s">&#39;h&#39;</span><span class="pn">;</span> <span class="s">&#39;j&#39;</span><span class="pn">]</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 34)" onmouseover="showTip(event, 'fs16', 34)" class="id">i</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs15', 36)" onmouseover="showTip(event, 'fs15', 36)" class="id">ofSeq</span> <span class="pn">[</span> <span class="s">&#39;a&#39;</span><span class="pn">;</span> <span class="s">&#39;b&#39;</span><span class="pn">;</span> <span class="s">&#39;q&#39;</span><span class="pn">;</span> <span class="s">&#39;z&#39;</span><span class="pn">;</span> <span class="s">&#39;h&#39;</span><span class="pn">;</span> <span class="s">&#39;j&#39;</span><span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
@@ -123,7 +123,9 @@ the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespa
 <div class="tip" id="fs11">val ofPoint : p:&#39;t -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
 <div class="tip" id="fs12">[&lt;Struct&gt;]<br />val f : Range&lt;float&gt;</div>
 <div class="tip" id="fs13">[&lt;Struct&gt;]<br />val g : Range&lt;float&gt;</div>
-<div class="tip" id="fs14">val ofSeq : xs:#seq&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
+<div class="tip" id="fs14">[&lt;Struct&gt;]<br />val h : Range&lt;int&gt;</div>
+<div class="tip" id="fs15">val ofSeq : xs:#seq&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
+<div class="tip" id="fs16">[&lt;Struct&gt;]<br />val i : Range&lt;char&gt;</div>
 
         </div>
         <div class="span3">
