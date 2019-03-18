@@ -4,10 +4,21 @@
 #I "../../bin/RangerFS/net47"
 
 (**
-RangerFS
-======================
+RangerFS - Intervals for F#
+========================
 
-Generic Intervals for .NET
+RangerFS is a library for creating, manipulating, composing and comparing closed intervals in a functional manner.  
+Inspiration is taken from [Allen's Interval Algebra](https://en.wikipedia.org/wiki/Allen%27s_interval_algebra) in defining interval relations.
+
+The generic type `Range<'t when 't:comparison>` allows intervals to be constructed for many types including:
+
+- `int`
+- `float`
+- `in64`
+- `DateTime`
+- `TimeSpan`
+- `char` 
+- user types implementing `comparison`
 
 <div class="row">
   <div class="span1"></div>

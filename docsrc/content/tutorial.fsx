@@ -4,68 +4,51 @@
 #I "../../bin/RangerFS/net47"
 
 (**
-RangerFS - Intervals for .NET
+RangerFS in 5 minutes
 ========================
 
-RangerFS is a library for creating, manipulating, and comparing numeric intervals.
-The type `Range<t>` allows intervals to be defined over many types including:
+Firstly reference `RangerFS.dll` from [Nuget]("https://nuget.org/packages/RangerFS") and then reference
+the `.dll` in F# Interactive and open the `Ranger` namespace.
 
-- `int`
-- `float`
-- `in64`
-- `DateTime`
-- `TimeSpan`
-- `char` 
-- any other type implementing `IComparable`
-
-The generic nature of the library is enabled by FSharp's type system but is 
-designed with CSharp interoperability in mind to allow idomatic use from both languages. 
-
-# A Range of Integers
--------
 *)
-
-(** The simplest    *)
-(*** define-output:simple ***)
 #r "RangerFS.dll"
 
 open Ranger
 open Ranger.Operators
 
+(*
+# A Simple Range
+
+The primary constructor of `Range<'t>` is `Range.ofBounds` or it's operator equivalent `<=>`
+*)
+
+(** define-output:a *)
 let a = Range.ofBounds 0 10
-let b = Range.ofPoint 10000000L
-let c = Range.ofSeq [3.2m; 2.8m; 1.04m; -9.42m; ]
-let d = DateTime.Now |> Range.ofSize (TimeSpan.FromHours 3.) 
-let e = -2.5 <=> 2.5 
-let f = 'a' <=> 'z'
+let b = 0 <=> 10
 
-printf 
-  "a = %O\nb = %O\nc = %O\nd = %O\ne = %O\nf = %O"
-  a b c d e f  
-(*** include-output:simple ***)
-
-(** Transforming Ranges *)
-(*** define-output:a ***) 
-let aFortnight : DateTime Range = 
-  Range.ofBounds -7 7
-  |> Range.map float 
-  |> Range.map TimeSpan.FromDays
-  |> Range.map ((+) DateTime.Today)
-
-printf """
-  Fortnight = %O
-  Duration = %O
-  """ aFortnight (Range.size aFortnight)
-
+printf "%O is equal to %O" a b
 (*** include-output:a ***)
 
-(**
+(** Arguments to `Range.ofBounds` may be provided in any order *)
+(** define-output:b *)
+let c = Range.ofBounds 2 10
+let d = Range.ofBounds 10 2
 
+printf "%O" (b = c)
+(*** include-output:b ***)
 
+(** The special case where `range.Lo = range.Hi` can be constructed by
+`Range.ofPoint` or it's operator equivalent `!` *)
 
+(** define-output:c *)
+let e = Range.ofPoint 2.5
+let f = Range.ofBounds 2.5 2.5
+let g = !2.5
 
+printf "%O = %O = %O" e f g 
+(*** include-output:c ***)
 
-*)
-#r "RangerFS.dll"
-open Ranger
-
+(** We can also construct a `Range` from a sequence of points with `Range.ofSeq` *)
+(** define-output:d *)
+Range.ofSeq [ 7; 5; -2; -100; 50; 75]
+(*** include-output:d ***)
