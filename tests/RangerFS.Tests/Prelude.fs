@@ -5,6 +5,9 @@ open FsCheck
 open Ranger
 open System
 
+/// Example of a unit of measure type for testing
+[<Measure>] type kilometre
+
 /// Example of a custom type for use in ranges
 type BoundedInt(n: int) =
     let value = 
@@ -58,11 +61,6 @@ type BoundedInt(n: int) =
 
 [<AutoOpen>]
 module Prelude = 
-
-    let not_null x =
-        match box x with
-        | null -> false
-        | _ -> true
        
     let inline nonInf< ^T when ^T : (static member IsInfinity : ^T -> bool)> (num:^T) : bool =
         let inf = (^T : (static member IsInfinity : ^T -> bool) (num))
@@ -71,6 +69,11 @@ module Prelude =
     let inline nonNaN< ^T when ^T : (static member IsNaN: ^T -> bool)> (num:^T) : bool =
         let inf = (^T : (static member IsNaN : ^T -> bool) (num))
         not inf
+
+    let nonNull x = 
+        match box x with
+        | null -> false
+        | _ -> true
 
     let year = TimeSpan.FromDays 365.
 
@@ -103,15 +106,15 @@ module Prelude =
 
         static member inline GenericRange< ^u when ^u:comparison>() =
             Arb.generate< ^u>
-            |> Gen.filter not_null
-            |> Gen.listOf
+            |> Gen.filter nonNull
+            |> Gen.listOfLength 3
             |> Gen.map Range.ofSeq
             |> Arb.fromGen
 
         static member inline NonEmptyRange< ^u when ^u:comparison>() =
             Arb.generate< ^u>
-            |> Gen.filter not_null
-            |> Gen.listOfLength 10
+            |> Gen.filter nonNull
+            |> Gen.listOfLength 3
             |> Gen.map Range.ofSeq
             |> Gen.filter (Range.isEmpty >> not)
             |> Gen.map (fun r -> {Range=r})

@@ -51,8 +51,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{7C6D08
 		build.sh = build.sh
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RangeFS.CSharpTests", "RangeFS.CSharpTests\RangeFS.CSharpTests.csproj", "{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,10 +65,6 @@ Global
 		{056C189A-3F41-4C02-BB13-195435C13B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{056C189A-3F41-4C02-BB13-195435C13B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{056C189A-3F41-4C02-BB13-195435C13B29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,7 +73,6 @@ Global
 		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{056C189A-3F41-4C02-BB13-195435C13B29} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
-		{F1BE9B05-3F78-4A7B-87CC-094CCEA559FD} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59DB2A94-A12B-4A4E-A508-B278A8D80901}

@@ -24,7 +24,7 @@ let project = "RangerFS"
 
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
-let summary = "Intervals for .NET"
+let summary = "Intervals for F#"
 
 // Longer description of the project
 // (used as a description for NuGet package; line breaks are automatically cleaned up)
@@ -34,7 +34,7 @@ let description = "A library for generic interval arithmetic"
 let author = "Justin Rawlings"
 
 // Tags for your project (for NuGet package)
-let tags = "FSharp dotnetcore intervals csharp dotnet"
+let tags = "intervals fsharp dotnetcore dotnet"
 
 // File system information
 let solutionFile  = "RangerFS.sln"
@@ -143,6 +143,7 @@ Target.create "Build" <| fun _ ->
                     "Configuration", configuration
                 ]
          }
+
     MSBuild.build setParams solutionFile
 
 // --------------------------------------------------------------------------------------
@@ -210,11 +211,11 @@ let githubLink = sprintf "https://github.com/%s/%s" github_release_user gitName
 
 // Specify more information about your project
 let info =
-  [ "project-name", "RangerFS"
-    "project-author", "Justin Rawlings"
+  [ "project-name",    "RangerFS"
+    "project-author",  "Justin Rawlings"
     "project-summary", "Intervals for .NET"
-    "project-github", githubLink
-    "project-nuget", "http://nuget.org/packages/RangerFS" ]
+    "project-github",  githubLink
+    "project-nuget",   "http://nuget.org/packages/RangerFS" ]
 
 let root = website
 

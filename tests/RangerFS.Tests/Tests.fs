@@ -12,17 +12,18 @@ open Prelude
 
 module ConstructionTests =
 
-    let make<'t when 't:comparison> () : Test = 
+    let make<'t when 't:comparison> name : Test = 
 
       let type' = typeof<'t>
+      let name = if String.IsNullOrEmpty name then type'.Name else name
             
-      testList (sprintf "%s" type'.Name) [
+      testList name [
         
-          testProp "order doesn't matter for creation"
+          testProp "creation is order agnostic"
             <| fun (lo: 't, hi: 't) ->
                 (Range.ofBounds lo hi) = (Range.ofBounds hi lo)
 
-          testProp "same value is a point"
+          testProp "ofPoint x = ofBounds x x"
             <| fun (x: 't) ->
                 let r1 = Range.ofBounds x x
                 let r2 = Range.ofPoint x
@@ -41,24 +42,23 @@ module ConstructionTests =
     [<Tests>]
     let tests = 
         testList "creation" [
-            make<DateTime>()
-            make<Int16>()
-            make<Int32>()
-            make<Int64>()
-            make<char>()
-            make<float>()
-            make<float32>()
-            make<BoundedInt>()
+            make<DateTime> ""
+            make<Int16> ""
+            make<Int32> ""
+            make<Int64> ""
+            make<char> ""
+            make<float> ""
+            make<float32> ""
+            make<BoundedInt> "custom"
+            make<int<kilometre>> "uom"
         ]        
 
 
 module LogicTests = 
 
-    let make<'t when 't:comparison> () : Test =
-
-        let type' = typeof<'t>
+    let make<'t when 't:comparison> name : Test =
             
-        testList (sprintf "%s" type'.Name) [
+        testList name [
 
             testProp "union with self is self"
                 <| fun (x: 't Range) ->
@@ -68,7 +68,7 @@ module LogicTests =
                 <| fun (a: 't Range, b: 't Range) ->
                 (Range.union a b) = (Range.union b a)
 
-            testProp "disjoin opposite of intersect"
+            testProp "disjoint opposite of intersect"
                 <| fun (a: 't Range, b: 't Range) ->
                 (Range.intersects a b) <> (Range.disjoint a b)
 
@@ -98,41 +98,34 @@ module LogicTests =
                     else
                         true
 
-            testProp "map id does nothing"
+            testProp "map id = id"
                 <| fun (r: 't Range) ->
                     r
                     |> Range.map id
                     |> (=) r
 
             testProp "union of lo is same" 
-                <| fun (r: 't NonEmptyRange) ->
-                    let r = r.Range
-                    r
-                    |> Range.union (Range.ofPoint r.Lo)
-                    |> (=) r                    
+                <| fun ({Range=r}: 't NonEmptyRange) ->
+                    r.Union(!r.Lo).Equals(r)
 
             testProp "union of hi is same" 
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    r
-                    |> Range.union (Range.ofPoint r.Hi)
-                    |> (=) r
+                    r.Union(!r.Hi).Equals(r)
 
             testProp "bisect by lower bound"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    let struct(a,b) = Range.bisect r (!r.Lo)
+                    let struct(a,b) = r.Bisect(r.Lo)
                     (a = !r.Lo) && (b = r)
                         
             testProp "bisect by upper bound"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    let struct(a,b) = Range.bisect r (!r.Hi)
+                    let struct(a,b) = r.Bisect(r.Hi)
                     (b = !r.Hi) && (a = r)
 
             testProp "bisecting by self is the bounds"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
                     let struct(a,b) = Range.bisect r r
                     (a = !r.Lo) && (b = !r.Hi)
-
-
                     
         ]
 
@@ -140,14 +133,15 @@ module LogicTests =
     [<Tests>]
     let tests= 
         testList "logic" [
-            make<DateTime>()
-            make<Int16>()
-            make<Int32>()
-            make<Int64>()
-            make<char>()
-            make<float>()
-            make<single>()
-            make<BoundedInt>()
+            make<DateTime> "date"
+            make<Int16> "int16"
+            make<Int32> "int32"
+            make<Int64> "int64"
+            make<char> "char"
+            make<float> "float"
+            make<single> "single"
+            make<BoundedInt> "custom"
+            make<int<kilometre>> "uom"
         ]                
 
 
@@ -170,15 +164,15 @@ module DeltaTests =
             testProp "int16" test<Int16, Int16>
             testProp "int32" test<Int32, Int32>
             testProp "int64" test<Int64, int64>
-            testProp "custom" test<BoundedInt, BoundedInt>
+            testProp "measure" test<int<kilometre>, int<kilometre>>
         ]
 
 module RelationTests = 
 
-    let x = 1
-    let o = 0
+    let private x = 1
+    let private o = 0
 
-    let r (xs: int list) : int Range = 
+    let private makeRangeFromASCII (xs: int list) : int Range = 
         let lo = List.tryFindIndex ((=) x) xs
         let hi = List.tryFindIndexBack ((=) x) xs
         match (lo, hi) with
@@ -186,15 +180,15 @@ module RelationTests =
             Range.ofBounds lo' hi'
         | _ -> Range.empty
 
-    let test x y rel : Test = 
-        let x = r x
-        let y = r y
-        let rel' = Range.relation x y
-        testCase (string rel) 
-        <| fun () ->
-            Expect.equal rel' rel (sprintf "wrong relation %O vs %O" x y)
+    let private makeTest x y (expected:Relation) : Test = 
+        let x = makeRangeFromASCII x
+        let y = makeRangeFromASCII y
+        let actual: Relation = Range.relation x y
 
-    let inverse : Test = 
+        testCase (string expected) <| fun () ->
+            Expect.equal actual expected (sprintf "relation test %O vs %O" x y)
+
+    let private inverseTest : Test = 
         
         let inline test (a: int Range) (b: int Range) =
             let fwd = Range.relation a b
@@ -218,7 +212,7 @@ module RelationTests =
 
         testProp "inverse" test
 
-    let equal : Test =
+    let equalTest : Test =
         testProp "equals" <| fun (r : int Range) ->
             (Range.relation r r) = Relation.Equal
             
@@ -226,74 +220,74 @@ module RelationTests =
     [<Tests>]
     let tests = 
         testList "relations" [
-            equal
+            equalTest
 
-            test 
+            makeTest
                 [x;x;x;x;x;o;o;o]
                 [o;o;o;o;x;x;x;o]
                 Relation.MeetsStart
 
-            test 
+            makeTest
                 [o;o;o;x;x;x;x;o]
                 [x;x;x;x;o;o;o;o]
                 Relation.MeetsEnd
 
-            test 
+            makeTest
                 [x;x;x;x;o;o;o;o]
                 [o;o;o;o;o;o;x;x]
                 Relation.Before
 
-            test 
+            makeTest
                 [o;o;o;o;o;o;x;x]
                 [x;x;x;x;o;o;o;o]
                 Relation.After
 
-            test 
+            makeTest
                 [o;x;x;x;x;x;o;o]
                 [o;o;x;x;o;o;o;o]
                 Relation.Contains
 
-            test 
+            makeTest
                 [o;o;x;x;o;o;o;o]
                 [o;x;x;x;x;o;o;o]
                 Relation.Within
 
-            test 
+            makeTest
                 [o;x;o;o;o;o;o;o]
                 [o;x;o;o;o;o;o;o]
                 Relation.Equal
 
-            test 
+            makeTest
                 [x;x;x;o;o;o;o;o]
                 [o;x;x;x;x;o;o;o]
                 Relation.OverlapsStart
 
-            test 
+            makeTest
                 [o;x;x;x;x;o;o;o]
                 [x;x;x;o;o;o;o;o]
                 Relation.OverlapsEnd
 
-            test 
+            makeTest
                 [o;x;x;x;x;o;o;o]
                 [o;x;x;x;x;x;o;o]
                 Relation.Starts
 
-            test 
+            makeTest
                 [o;x;x;x;x;o;o;o]
                 [o;x;x;o;o;o;o;o]
                 Relation.StartedBy
 
-            test 
+            makeTest
                 [o;o;o;o;x;x;o;o]
                 [o;x;x;x;x;x;o;o]
                 Relation.Finishes
 
-            test 
+            makeTest
                 [o;x;x;x;x;x;x;o]
                 [o;o;o;o;o;x;x;o]
                 Relation.FinishedBy
 
-            test 
+            makeTest
                 [o;x;o;o;o;o;o;o]
                 [o;o;o;o;o;o;o;o]
                 Relation.Empty
@@ -306,30 +300,31 @@ module InlineTests =
     let tests =
         testList "inline" [
 
-            testCase "addition works " <| fun () ->
+            testCase "addition" <| fun () ->
                 let a = 2.0 <=> 3.0
                 let b = a + !0.5
                 let c = 2.5 <=> 3.5
                 Expect.equal b c ""
 
-            testCase "subtraction works " <| fun () ->
+            testCase "subtraction" <| fun () ->
                 let a = 5.0 <=> -5.0
                 let b = a - 0.5
                 let c = -5.5 <=> 4.5
                 Expect.equal b c ""
 
-            testCase "multiplication works" <| fun () ->
-                let a =
-                    Range.ofSize 4 0
-
+            testCase "multiplication" <| fun () ->
+                let a = (0).ToRangeOffset(4)
                 let b =  a * 10
-
                 Expect.equal b (0 <=> 40) ""
 
-            testCase "divison works" <| fun () ->
+            testCase "divison" <| fun () ->
                 let a = 3 <=> 12
-                let b = Range.map (fun x -> x / 3) a
+                let b = a / 3
                 Expect.equal b (1 <=> 4) ""
 
-        ]
+            testCase "modulo" <| fun () ->
+                let a = 3 <=> 12
+                let b = a % 3
+                Expect.equal b !0 ""
 
+        ]
