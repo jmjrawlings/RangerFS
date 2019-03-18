@@ -460,7 +460,7 @@ module Range =
 
     /// Combine the two ranges by cross-applying the function between all the bounds
     /// combine (+) {1,2} {3,4} = {3, 6}
-    let combine (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
+    let inline combine (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
         a |> bind (fun a' -> 
             b |> map (fun b' -> f a' b'))
 
@@ -483,6 +483,18 @@ module Range =
 
             cmp.Value                       
 
+    let inline add a b = combine (+) a b            
+    let inline sub a b = combine (-) a b            
+    let inline mul a b = combine (*) a b
+    let inline div a b = combine (/) a b
+
+    /// Returns the Haursoff Distance between the given intervals
+    /// https://en.wikipedia.org/wiki/Hausdorff_distance
+    let inline haursoff a b = 
+        let delta = 
+            if a > b then sub a b else sub b a
+        hi delta
+
 
 /// Operator support and Member Access
 type Range<'t when 't:comparison> with
@@ -494,28 +506,28 @@ type Range<'t when 't:comparison> with
        Range.map (~+) a
 
     static member inline (+) (a, b) =
-       Range.combine (+) a b
+       Range.add a b
 
     static member inline (+) (a, b) =
-       Range.combine (+) a (Range.ofPoint b)
+       Range.add a (Range.ofPoint b)
 
     static member inline (-) (a, b) =
-       Range.combine (-) a b
+       Range.sub a b
 
     static member inline (-) (a, b) =
-       Range.combine (-) a (Range.ofPoint b)
+       Range.sub a (Range.ofPoint b)
 
     static member inline (*) (a, b) =
-       Range.combine (*) a b
+       Range.mul a b
 
     static member inline (*) (a, b) =
-       Range.combine (*) a (Range.ofPoint b)
+       Range.mul a (Range.ofPoint b)
 
     static member inline (/) (a, b) =
-       Range.combine (/) a b
+       Range.div a b
 
     static member inline (/) (a, b) =
-       Range.combine (/) a (Range.ofPoint b)
+       Range.div a (Range.ofPoint b)
 
     static member inline (%) (a, b) =
        Range.combine (%) a b
