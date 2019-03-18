@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>RangerFS - Intervals for .NET
+    <title>RangerFS in 5 minutes
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Intervals for .NET"/>
@@ -33,22 +33,9 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1><a name="RangerFS-Intervals-for-NET" class="anchor" href="#RangerFS-Intervals-for-NET">RangerFS - Intervals for .NET</a></h1>
-<p>RangerFS is a library for creating, manipulating, and comparing numeric intervals.
-The type <code>Range&lt;t&gt;</code> allows intervals to be defined over many types including:</p>
-<ul>
-<li><code>int</code></li>
-<li><code>float</code></li>
-<li><code>in64</code></li>
-<li><code>DateTime</code></li>
-<li><code>TimeSpan</code></li>
-<li><code>char</code></li>
-<li>any other type implementing <code>IComparable</code></li>
-</ul>
-<p>The generic nature of the library is enabled by FSharp's type system but is
-designed with CSharp interoperability in mind to allow idomatic use from both languages.</p>
-<h2><a name="A-Range-of-Integers" class="anchor" href="#A-Range-of-Integers"># A Range of Integers</a></h2>
-<p>The simplest</p>
+<h1><a name="RangerFS-in-5-minutes" class="anchor" href="#RangerFS-in-5-minutes">RangerFS in 5 minutes</a></h1>
+<p>Firstly reference <code>RangerFS.dll</code> from <a href="" title="https://nuget.org/packages/RangerFS">Nuget</a> and then reference
+the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespace.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -59,84 +46,91 @@ designed with CSharp interoperability in mind to allow idomatic use from both la
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-<span class="l">11: </span>
-<span class="l">12: </span>
-<span class="l">13: </span>
-<span class="l">14: </span>
-<span class="l">15: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;RangerFS.dll&quot;</span>
 
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">Ranger</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">Ranger</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">Operators</span>
 
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">a</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="id">ofBounds</span> <span class="n">0</span> <span class="n">10</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="id">b</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 8)" onmouseover="showTip(event, 'fs4', 8)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="id">ofPoint</span> <span class="n">10000000L</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="id">c</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 11)" onmouseover="showTip(event, 'fs4', 11)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="id">ofSeq</span> <span class="pn">[</span><span class="n">3.2m</span><span class="pn">;</span> <span class="n">2.8m</span><span class="pn">;</span> <span class="n">1.04m</span><span class="pn">;</span> <span class="o">-</span><span class="n">9.42m</span><span class="pn">;</span> <span class="pn">]</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="id">d</span> <span class="o">=</span> <span class="id">DateTime</span><span class="pn">.</span><span class="id">Now</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="id">ofSize</span> <span class="pn">(</span><span class="id">TimeSpan</span><span class="pn">.</span><span class="id">FromHours</span> <span class="n">3.</span><span class="pn">)</span> 
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="id">e</span> <span class="o">=</span> <span class="o">-</span><span class="n">2.5</span> <span class="o">&lt;=&gt;</span> <span class="n">2.5</span> 
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="id">f</span> <span class="o">=</span> <span class="s">&#39;a&#39;</span> <span class="o">&lt;=&gt;</span> <span class="s">&#39;z&#39;</span>
+<span class="c">(*</span>
+<span class="c"># A Simple Range</span>
 
-<span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="fn">printf</span> 
-  <span class="s">&quot;a = </span><span class="pf">%O</span><span class="s">\nb = </span><span class="pf">%O</span><span class="s">\nc = </span><span class="pf">%O</span><span class="s">\nd = </span><span class="pf">%O</span><span class="s">\ne = </span><span class="pf">%O</span><span class="s">\nf = </span><span class="pf">%O</span><span class="s">&quot;</span>
-  <span onmouseout="hideTip(event, 'fs3', 19)" onmouseover="showTip(event, 'fs3', 19)" class="id">a</span> <span onmouseout="hideTip(event, 'fs6', 20)" onmouseover="showTip(event, 'fs6', 20)" class="id">b</span> <span onmouseout="hideTip(event, 'fs8', 21)" onmouseover="showTip(event, 'fs8', 21)" class="id">c</span> <span onmouseout="hideTip(event, 'fs10', 22)" onmouseover="showTip(event, 'fs10', 22)" class="id">d</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="id">e</span> <span onmouseout="hideTip(event, 'fs13', 24)" onmouseover="showTip(event, 'fs13', 24)" class="id">f</span>  
+<span class="c">The primary constructor of `Range&lt;&#39;t&gt;` is `Range.ofBounds` or it&#39;s operator equivalent `&lt;=&gt;`</span>
+<span class="c">*)</span>
 </code></pre></td>
 </tr>
 </table>
-<table class="pre"><tr><td><pre><code>No output has been produced.</code></pre></td></tr></table>
-<p>Transforming Ranges</p>
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
-<span class="l"> 2: </span>
-<span class="l"> 3: </span>
-<span class="l"> 4: </span>
-<span class="l"> 5: </span>
-<span class="l"> 6: </span>
-<span class="l"> 7: </span>
-<span class="l"> 8: </span>
-<span class="l"> 9: </span>
-<span class="l">10: </span>
-</pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="id">aFortnight</span> <span class="pn">:</span> <span class="id">DateTime</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="vt">Range</span> <span class="o">=</span> 
-  <span onmouseout="hideTip(event, 'fs4', 27)" onmouseover="showTip(event, 'fs4', 27)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 28)" onmouseover="showTip(event, 'fs5', 28)" class="id">ofBounds</span> <span class="o">-</span><span class="n">7</span> <span class="n">7</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 29)" onmouseover="showTip(event, 'fs4', 29)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="id">map</span> <span onmouseout="hideTip(event, 'fs17', 31)" onmouseover="showTip(event, 'fs17', 31)" class="fn">float</span> 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 32)" onmouseover="showTip(event, 'fs4', 32)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 33)" onmouseover="showTip(event, 'fs16', 33)" class="id">map</span> <span class="id">TimeSpan</span><span class="pn">.</span><span class="id">FromDays</span>
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs4', 34)" onmouseover="showTip(event, 'fs4', 34)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs16', 35)" onmouseover="showTip(event, 'fs16', 35)" class="id">map</span> <span class="pn">(</span><span class="pn">(</span><span class="o">+</span><span class="pn">)</span> <span class="id">DateTime</span><span class="pn">.</span><span class="id">Today</span><span class="pn">)</span>
-
-<span onmouseout="hideTip(event, 'fs14', 36)" onmouseover="showTip(event, 'fs14', 36)" class="fn">printf</span> <span class="s">&quot;&quot;&quot;</span>
-<span class="s">  Fortnight = %O</span>
-<span class="s">  Duration = %O</span>
-<span class="s">  &quot;&quot;&quot;</span> <span onmouseout="hideTip(event, 'fs15', 37)" onmouseover="showTip(event, 'fs15', 37)" class="id">aFortnight</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs18', 39)" onmouseover="showTip(event, 'fs18', 39)" class="id">size</span> <span onmouseout="hideTip(event, 'fs15', 40)" onmouseover="showTip(event, 'fs15', 40)" class="id">aFortnight</span><span class="pn">)</span>
-</code></pre></td>
-</tr>
-</table>
-<table class="pre"><tr><td><pre><code>No output has been produced.</code></pre></td></tr></table>
+<p>define-output:a</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;RangerFS.dll&quot;</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 41)" onmouseover="showTip(event, 'fs1', 41)" class="id">Ranger</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="id">a</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="id">ofBounds</span> <span class="n">0</span> <span class="n">10</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="id">b</span> <span class="o">=</span> <span class="n">0</span> <span class="o">&lt;=&gt;</span> <span class="n">10</span>
+
+<span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="fn">printf</span> <span class="s">&quot;</span><span class="pf">%O</span><span class="s"> is equal to </span><span class="pf">%O</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs3', 9)" onmouseover="showTip(event, 'fs3', 9)" class="id">a</span> <span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="id">b</span>
 </code></pre></td>
 </tr>
 </table>
+<table class="pre"><tr><td><pre><code>Could not find reference 'a'</code></pre></td></tr></table>
+<p>Arguments to <code>Range.ofBounds</code> may be provided in any order</p>
+<p>define-output:b</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="id">c</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 12)" onmouseover="showTip(event, 'fs4', 12)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 13)" onmouseover="showTip(event, 'fs5', 13)" class="id">ofBounds</span> <span class="n">2</span> <span class="n">10</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 14)" onmouseover="showTip(event, 'fs9', 14)" class="id">d</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 15)" onmouseover="showTip(event, 'fs4', 15)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 16)" onmouseover="showTip(event, 'fs5', 16)" class="id">ofBounds</span> <span class="n">10</span> <span class="n">2</span>
+
+<span onmouseout="hideTip(event, 'fs7', 17)" onmouseover="showTip(event, 'fs7', 17)" class="fn">printf</span> <span class="s">&quot;</span><span class="pf">%O</span><span class="s">&quot;</span> <span class="pn">(</span><span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="id">b</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 19)" onmouseover="showTip(event, 'fs8', 19)" class="id">c</span><span class="pn">)</span>
+</code></pre></td>
+</tr>
+</table>
+<table class="pre"><tr><td><pre><code>Could not find reference 'b'</code></pre></td></tr></table>
+<p>The special case where <code>range.Lo = range.Hi</code> can be constructed by
+<code>Range.ofPoint</code> or it's operator equivalent <code>!</code></p>
+<p>define-output:c</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 20)" onmouseover="showTip(event, 'fs10', 20)" class="id">e</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 21)" onmouseover="showTip(event, 'fs4', 21)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs11', 22)" onmouseover="showTip(event, 'fs11', 22)" class="id">ofPoint</span> <span class="n">2.5</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="id">f</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 24)" onmouseover="showTip(event, 'fs4', 24)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs5', 25)" onmouseover="showTip(event, 'fs5', 25)" class="id">ofBounds</span> <span class="n">2.5</span> <span class="n">2.5</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 26)" onmouseover="showTip(event, 'fs13', 26)" class="id">g</span> <span class="o">=</span> <span class="o">!</span><span class="n">2.5</span>
+
+<span onmouseout="hideTip(event, 'fs7', 27)" onmouseover="showTip(event, 'fs7', 27)" class="fn">printf</span> <span class="s">&quot;</span><span class="pf">%O</span><span class="s"> = </span><span class="pf">%O</span><span class="s"> = </span><span class="pf">%O</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs10', 28)" onmouseover="showTip(event, 'fs10', 28)" class="id">e</span> <span onmouseout="hideTip(event, 'fs12', 29)" onmouseover="showTip(event, 'fs12', 29)" class="id">f</span> <span onmouseout="hideTip(event, 'fs13', 30)" onmouseover="showTip(event, 'fs13', 30)" class="id">g</span> 
+</code></pre></td>
+</tr>
+</table>
+<table class="pre"><tr><td><pre><code>Could not find reference 'c'</code></pre></td></tr></table>
+<p>We can also construct a <code>Range</code> from a sequence of points with <code>Range.ofSeq</code></p>
+<p>define-output:d</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs4', 31)" onmouseover="showTip(event, 'fs4', 31)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 32)" onmouseover="showTip(event, 'fs14', 32)" class="id">ofSeq</span> <span class="pn">[</span> <span class="n">7</span><span class="pn">;</span> <span class="n">5</span><span class="pn">;</span> <span class="o">-</span><span class="n">2</span><span class="pn">;</span> <span class="o">-</span><span class="n">100</span><span class="pn">;</span> <span class="n">50</span><span class="pn">;</span> <span class="n">75</span><span class="pn">]</span>
+</code></pre></td>
+</tr>
+</table>
+<table class="pre"><tr><td><pre><code>Could not find reference 'd'</code></pre></td></tr></table>
 
 <div class="tip" id="fs1">namespace Ranger</div>
 <div class="tip" id="fs2">module Operators<br /><br />from Ranger</div>
 <div class="tip" id="fs3">[&lt;Struct&gt;]<br />val a : Range&lt;int&gt;</div>
 <div class="tip" id="fs4">Multiple items<br />module Range<br /><br />from Ranger<br /><br />--------------------<br />[&lt;Struct&gt;]<br />type Range&lt;&#39;t (requires comparison)&gt; =<br />&#160;&#160;private | Empty_<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;| Point_ of &#39;t<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;| Range_ of a: &#39;t * b: &#39;t<br />&#160;&#160;&#160;&#160;interface IRangeProvider&lt;&#39;t&gt;<br />&#160;&#160;&#160;&#160;member After : point:&#39;t -&gt; bool<br />&#160;&#160;&#160;&#160;member After : that:Range&lt;&#39;t&gt; -&gt; bool<br />&#160;&#160;&#160;&#160;member Before : point:&#39;t -&gt; bool<br />&#160;&#160;&#160;&#160;member Before : that:Range&lt;&#39;t&gt; -&gt; bool<br />&#160;&#160;&#160;&#160;member Bind : range:Range&lt;&#39;t&gt; * f:Func&lt;&#39;t,Range&lt;&#39;u&gt;&gt; -&gt; Range&lt;&#39;u&gt; (requires comparison)<br />&#160;&#160;&#160;&#160;member Bind : range:Range&lt;&#39;t&gt; * fLo:Func&lt;&#39;t,Range&lt;&#39;u&gt;&gt; * fHi:Func&lt;&#39;t,Range&lt;&#39;u&gt;&gt; -&gt; Range&lt;&#39;u&gt; (requires comparison)<br />&#160;&#160;&#160;&#160;member Bisect : that:Range&lt;&#39;t&gt; -&gt; struct (Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;)<br />&#160;&#160;&#160;&#160;member Bisect : range:Range&lt;&#39;t&gt; * point:&#39;t -&gt; struct (Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;)<br />&#160;&#160;&#160;&#160;member Contains : point:&#39;t -&gt; bool<br />&#160;&#160;&#160;&#160;...</div>
 <div class="tip" id="fs5">val ofBounds : lo:&#39;t -&gt; hi:&#39;t -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
-<div class="tip" id="fs6">[&lt;Struct&gt;]<br />val b : Range&lt;int64&gt;</div>
-<div class="tip" id="fs7">val ofPoint : p:&#39;t -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
-<div class="tip" id="fs8">[&lt;Struct&gt;]<br />val c : Range&lt;decimal&gt;</div>
-<div class="tip" id="fs9">val ofSeq : xs:#seq&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
-<div class="tip" id="fs10">[&lt;Struct&gt;]<br />val d : Range&lt;obj&gt;</div>
-<div class="tip" id="fs11">val ofSize : delta:&#39;d -&gt; p:&#39;t -&gt; Range&lt;&#39;t&gt; (requires member ( + ) and comparison)</div>
-<div class="tip" id="fs12">[&lt;Struct&gt;]<br />val e : Range&lt;float&gt;</div>
-<div class="tip" id="fs13">[&lt;Struct&gt;]<br />val f : Range&lt;char&gt;</div>
-<div class="tip" id="fs14">val printf : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
-<div class="tip" id="fs15">[&lt;Struct&gt;]<br />val aFortnight : Range&lt;int&gt;</div>
-<div class="tip" id="fs16">val map : f:(&#39;a -&gt; &#39;b) -&gt; r:Range&lt;&#39;a&gt; -&gt; Range&lt;&#39;b&gt; (requires comparison and comparison)</div>
-<div class="tip" id="fs17">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />--------------------<br />type float = System.Double<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float</div>
-<div class="tip" id="fs18">val size : r:Range&lt;&#39;t&gt; -&gt; &#39;u (requires comparison and member ( - ))</div>
+<div class="tip" id="fs6">[&lt;Struct&gt;]<br />val b : Range&lt;int&gt;</div>
+<div class="tip" id="fs7">val printf : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T</div>
+<div class="tip" id="fs8">[&lt;Struct&gt;]<br />val c : Range&lt;int&gt;</div>
+<div class="tip" id="fs9">[&lt;Struct&gt;]<br />val d : Range&lt;int&gt;</div>
+<div class="tip" id="fs10">[&lt;Struct&gt;]<br />val e : Range&lt;float&gt;</div>
+<div class="tip" id="fs11">val ofPoint : p:&#39;t -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
+<div class="tip" id="fs12">[&lt;Struct&gt;]<br />val f : Range&lt;float&gt;</div>
+<div class="tip" id="fs13">[&lt;Struct&gt;]<br />val g : Range&lt;float&gt;</div>
+<div class="tip" id="fs14">val ofSeq : xs:#seq&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; (requires comparison)</div>
 
         </div>
         <div class="span3">

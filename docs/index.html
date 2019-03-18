@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>RangerFS
+    <title>RangerFS - Intervals for F#
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Intervals for .NET"/>
@@ -33,8 +33,19 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1><a name="RangerFS" class="anchor" href="#RangerFS">RangerFS</a></h1>
-<p>Generic Intervals for .NET</p>
+<h1><a name="RangerFS-Intervals-for-F" class="anchor" href="#RangerFS-Intervals-for-F">RangerFS - Intervals for F#</a></h1>
+<p>RangerFS is a library for creating, manipulating, composing and comparing closed intervals in a functional manner.<br />
+Inspiration is taken from <a href="https://en.wikipedia.org/wiki/Allen%27s_interval_algebra">Allen's Interval Algebra</a> in defining interval relations.</p>
+<p>The generic type <code>Range&lt;'t when 't:comparison&gt;</code> allows intervals to be constructed for many types including:</p>
+<ul>
+<li><code>int</code></li>
+<li><code>float</code></li>
+<li><code>in64</code></li>
+<li><code>DateTime</code></li>
+<li><code>TimeSpan</code></li>
+<li><code>char</code></li>
+<li>user types implementing <code>comparison</code></li>
+</ul>
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
