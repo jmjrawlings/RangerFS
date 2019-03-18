@@ -36,31 +36,20 @@
 <h1><a name="RangerFS-in-5-minutes" class="anchor" href="#RangerFS-in-5-minutes">RangerFS in 5 minutes</a></h1>
 <p>Firstly reference <code>RangerFS.dll</code> from <a href="" title="https://nuget.org/packages/RangerFS">Nuget</a> and then reference
 the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespace.</p>
-<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
-<span class="l"> 2: </span>
-<span class="l"> 3: </span>
-<span class="l"> 4: </span>
-<span class="l"> 5: </span>
-<span class="l"> 6: </span>
-<span class="l"> 7: </span>
-<span class="l"> 8: </span>
-<span class="l"> 9: </span>
-<span class="l">10: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="pp">#r</span> <span class="s">&quot;RangerFS.dll&quot;</span>
 
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="id">Ranger</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="id">Ranger</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="id">Operators</span>
-
-<span class="c">(*</span>
-<span class="c"># A Simple Range</span>
-
-<span class="c">The primary constructor of `Range&lt;&#39;t&gt;` is `Range.ofBounds` or it&#39;s operator equivalent `&lt;=&gt;`</span>
-<span class="c">*)</span>
 </code></pre></td>
 </tr>
 </table>
-<p>define-output:a</p>
+<h1><a name="A-Simple-Range" class="anchor" href="#A-Simple-Range">A Simple Range</a></h1>
+<p>The primary constructor of <code>Range&lt;'t&gt;</code> is <code>Range.ofBounds</code> or it's operator equivalent <code>&lt;=&gt;</code></p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -73,9 +62,8 @@ the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespa
 </code></pre></td>
 </tr>
 </table>
-<table class="pre"><tr><td><pre><code>Could not find reference 'a'</code></pre></td></tr></table>
+<table class="pre"><tr><td><pre><code>{0 .. 10} is equal to {0 .. 10}</code></pre></td></tr></table>
 <p>Arguments to <code>Range.ofBounds</code> may be provided in any order</p>
-<p>define-output:b</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -88,7 +76,7 @@ the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespa
 </code></pre></td>
 </tr>
 </table>
-<table class="pre"><tr><td><pre><code>Could not find reference 'b'</code></pre></td></tr></table>
+<table class="pre"><tr><td><pre><code>False</code></pre></td></tr></table>
 <p>The special case where <code>range.Lo = range.Hi</code> can be constructed by
 <code>Range.ofPoint</code> or it's operator equivalent <code>!</code></p>
 <p>define-output:c</p>
@@ -108,14 +96,13 @@ the <code>.dll</code> in F# Interactive and open the <code>Ranger</code> namespa
 </table>
 <table class="pre"><tr><td><pre><code>Could not find reference 'c'</code></pre></td></tr></table>
 <p>We can also construct a <code>Range</code> from a sequence of points with <code>Range.ofSeq</code></p>
-<p>define-output:d</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs4', 31)" onmouseover="showTip(event, 'fs4', 31)" class="m">Range</span><span class="pn">.</span><span onmouseout="hideTip(event, 'fs14', 32)" onmouseover="showTip(event, 'fs14', 32)" class="id">ofSeq</span> <span class="pn">[</span> <span class="n">7</span><span class="pn">;</span> <span class="n">5</span><span class="pn">;</span> <span class="o">-</span><span class="n">2</span><span class="pn">;</span> <span class="o">-</span><span class="n">100</span><span class="pn">;</span> <span class="n">50</span><span class="pn">;</span> <span class="n">75</span><span class="pn">]</span>
 </code></pre></td>
 </tr>
 </table>
-<table class="pre"><tr><td><pre><code>Could not find reference 'd'</code></pre></td></tr></table>
+<table class="pre"><tr><td><pre><code></code></pre></td></tr></table>
 
 <div class="tip" id="fs1">namespace Ranger</div>
 <div class="tip" id="fs2">module Operators<br /><br />from Ranger</div>

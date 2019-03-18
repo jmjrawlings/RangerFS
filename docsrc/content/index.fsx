@@ -10,15 +10,14 @@ RangerFS - Intervals for F#
 RangerFS is a library for creating, manipulating, composing and comparing closed intervals in a functional manner.  
 Inspiration is taken from [Allen's Interval Algebra](https://en.wikipedia.org/wiki/Allen%27s_interval_algebra) in defining interval relations.
 
-The generic type `Range<'t when 't:comparison>` allows intervals to be constructed for many types including:
+The generic type `Range<'t>` allows intervals to be constructed for any type that satisfies the `comparison` constraint including:
 
 - `int`
 - `float`
-- `in64`
 - `DateTime`
 - `TimeSpan`
 - `char` 
-- user types implementing `comparison`
+- user types
 
 <div class="row">
   <div class="span1"></div>
@@ -30,6 +29,10 @@ The generic type `Range<'t when 't:comparison>` allows intervals to be construct
   </div>
   <div class="span1"></div>
 </div>
+
+# A motivating example
+
+
 
 Using RangerFS with Paket
 ------------------------

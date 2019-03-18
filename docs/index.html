@@ -36,15 +36,14 @@
 <h1><a name="RangerFS-Intervals-for-F" class="anchor" href="#RangerFS-Intervals-for-F">RangerFS - Intervals for F#</a></h1>
 <p>RangerFS is a library for creating, manipulating, composing and comparing closed intervals in a functional manner.<br />
 Inspiration is taken from <a href="https://en.wikipedia.org/wiki/Allen%27s_interval_algebra">Allen's Interval Algebra</a> in defining interval relations.</p>
-<p>The generic type <code>Range&lt;'t when 't:comparison&gt;</code> allows intervals to be constructed for many types including:</p>
+<p>The generic type <code>Range&lt;'t&gt;</code> allows intervals to be constructed for any type that satisfies the <code>comparison</code> constraint including:</p>
 <ul>
 <li><code>int</code></li>
 <li><code>float</code></li>
-<li><code>in64</code></li>
 <li><code>DateTime</code></li>
 <li><code>TimeSpan</code></li>
 <li><code>char</code></li>
-<li>user types implementing <code>comparison</code></li>
+<li>user types</li>
 </ul>
 <div class="row">
   <div class="span1"></div>
@@ -56,6 +55,7 @@ Inspiration is taken from <a href="https://en.wikipedia.org/wiki/Allen%27s_inter
   </div>
   <div class="span1"></div>
 </div>
+<h1><a name="A-motivating-example" class="anchor" href="#A-motivating-example">A motivating example</a></h1>
 <h2><a name="Using-RangerFS-with-Paket" class="anchor" href="#Using-RangerFS-with-Paket">Using RangerFS with Paket</a></h2>
 <p>Since RangerFS is a single-file module, it can be referenced using [Paket GitHub dependencies][deps].
 To do so, add following line to your <code>paket.dependencies</code> file:</p>

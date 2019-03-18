@@ -16,13 +16,13 @@ the `.dll` in F# Interactive and open the `Ranger` namespace.
 open Ranger
 open Ranger.Operators
 
-(*
+(**
 # A Simple Range
 
 The primary constructor of `Range<'t>` is `Range.ofBounds` or it's operator equivalent `<=>`
 *)
 
-(** define-output:a *)
+(*** define-output:a ***)
 let a = Range.ofBounds 0 10
 let b = 0 <=> 10
 
@@ -30,7 +30,7 @@ printf "%O is equal to %O" a b
 (*** include-output:a ***)
 
 (** Arguments to `Range.ofBounds` may be provided in any order *)
-(** define-output:b *)
+(*** define-output:b ***)
 let c = Range.ofBounds 2 10
 let d = Range.ofBounds 10 2
 
@@ -49,6 +49,6 @@ printf "%O = %O = %O" e f g
 (*** include-output:c ***)
 
 (** We can also construct a `Range` from a sequence of points with `Range.ofSeq` *)
-(** define-output:d *)
+(*** define-output:d ***)
 Range.ofSeq [ 7; 5; -2; -100; 50; 75]
 (*** include-output:d ***)
