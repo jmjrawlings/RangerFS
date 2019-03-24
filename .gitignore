@@ -181,7 +181,7 @@ paket-files
 *.orig
 docsrc/content/license.md
 docsrc/content/release-notes.md
-.fake
-.ionide
+.fake/
+.ionide/
 docsrc/tools/FSharp.Formatting.svclog
 temp/
