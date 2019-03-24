@@ -41,9 +41,6 @@ type Range<'t when 't : comparison> =
     override this.ToString() =
         Range.show this
 
-    interface IRangeProvider<'t> with
-        member this.Range = this
-
     interface IComparable with
         member this.CompareTo(that) =
             match that with
@@ -61,17 +58,15 @@ type Range<'t when 't : comparison> =
         member this.Hi = this.Hi
         member this.IsEmpty = this.IsEmpty
                     
+// Range and associated Data
+type RangeData<'bound,'data when 'bound:comparison> = 
+    { Data  : 'data
+      Range : 'bound Range }
 
-type IRangeProvider<'t when 't: comparison> = 
-    abstract member Range : 't Range
-
-// An Item and its associated Range
-type TaggedRange<'bound,'item when 'bound:comparison> = 
-    { Item: 'item; Range : 'bound Range }
-
-    interface IRangeProvider<'bound> with
-        member __.Range = __.Range
-
+    interface IRange<'bound> with
+        member __.Lo = __.Range.Lo
+        member __.Hi = __.Range.Hi
+        member __.IsEmpty = __.Range.IsEmpty
 
 /// Allen's Interval Algebra relation table
 /// https://en.wikipedia.org/wiki/Allen%27s_interval_algebra#Composition_of_relations_between_intervals
@@ -148,9 +143,6 @@ module private Compare =
             | LT -> -1
             | GT -> 1
             | EQ -> 0
-
-    let inline eq a b = 
-         a = b          
         
     let inline max a b =
         if a > b then a else b
@@ -167,9 +159,8 @@ module private Compare =
 
 [<RequireQualifiedAccess>]    
 module Range = 
-
-    open Compare
     open Operators
+    open Compare
 
     /// ToString
     let show (r: 't Range) : string =
@@ -368,6 +359,7 @@ module Range =
         |> Seq.pairwise
         |> Seq.map (fun (a,b) -> ofBounds a b)
 
+    [<CompiledName("Map")>]
     /// Apply the given functions to the lower and upper bounds of the Range
     let map2 (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
         match r with
@@ -375,10 +367,12 @@ module Range =
         | Point_ p -> (fLo p) <=> (fHi p)
         | Range_ (lo, hi) -> (fLo lo) <=> (fHi hi)
 
+    [<CompiledName("Map")>]
     /// Apply the given function to the lower and upper bounds of the Range
     let map (f: 't -> 'u) (r: 't Range) : 'u Range =
         map2 f f r
 
+    [<CompiledName("Bind")>]
     /// Standard bind operator
     let bind2 (fLo: 't -> 'u Range) (fHi: 't -> 'u Range) (r: 't Range) : 'u Range =
         if r.IsEmpty 
@@ -386,22 +380,27 @@ module Range =
         else (fLo r.Lo) ++ (fHi r.Hi)
 
     /// Standard bind operator
+    [<CompiledName("Bind")>]
     let bind (f: 't -> 'u Range) (r: 't Range) : 'u Range = 
         bind2 f f r
         
     /// Apply the given function to the Lo value of the Range
+    [<CompiledName("MapLo")>]
     let mapLo (f: 't -> 't) (r: 't Range) : 't Range = 
          map2 f id r
 
     /// Apply the given function to the Hi value of the Range
+    [<CompiledName("MapHi")>]
     let mapHi (f: 't -> 't) (r: 't Range) : 't Range = 
         map2 id f r
 
     /// Combine an element with a Range
-    let tag (item: 'u) (rng: 't Range) : TaggedRange<'t, 'u> = 
-        { Item = item; Range = rng }
+    [<CompiledName("WithData")>]
+    let withData (data: 'u) (rng: 't Range) : RangeData<'t, 'u> = 
+        { Data = data; Range = rng }
 
     /// Cast the range to the IRange interface
+    [<CompiledName("Cast")>]
     let cast (r: 't Range) : IRange<'t> =
         r :> IRange<'t>        
 
@@ -444,31 +443,36 @@ module Range =
             Math.Abs (longRand % (max - min)) + min
 
         /// Sample a random point from the Range
+        [<CompiledName("SampleInt")>]
         let int (rng: int Range) : int =
             random.Value.Next(rng.Lo, rng.Hi)
             
         /// Sample a random point from the Range
+        [<CompiledName("SampleFloat")>]
         let float (rng: float Range) : float =
             rng.Lo + (random.Value.NextDouble() * size rng)
 
         /// Sample a random point from the Range
+        [<CompiledName("SampleDateTime")>]
         let time (rng: DateTime Range) : DateTime =
             let span : TimeSpan = size rng
             rng.Lo.AddTicks (randomLong 0L span.Ticks)
 
         /// Sample a random point from the Range
+        [<CompiledName("SampleLong")>]
         let long (rng: int64 Range) : int64 =
             randomLong rng.Lo rng.Hi
 
     /// Combine the two ranges by cross-applying the function between all the bounds
     /// combine (+) {1,2} {3,4} = {3, 6}
+    [<CompiledName("Combine")>]
     let inline combine (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
         a |> bind (fun a' -> 
             b |> map (fun b' -> f a' b'))
 
     /// Ranges are ordered by LowerBound first then UpperBound
-    let compare this that : int = 
-        if this.IsEmpty       then -1
+    let internal compare this that : int = 
+        if      this.IsEmpty  then -1
         else if that.IsEmpty  then 1
         else 
             let lo = Compare.cmp this.Lo that.Lo
@@ -485,14 +489,15 @@ module Range =
 
             cmp.Value                       
 
-    let inline add a b = combine (+) a b            
-    let inline sub a b = combine (-) a b            
-    let inline mul a b = combine (*) a b
-    let inline div a b = combine (/) a b
+    let inline internal add a b = combine (+) a b            
+    let inline internal sub a b = combine (-) a b            
+    let inline internal mul a b = combine (*) a b
+    let inline internal div a b = combine (/) a b
 
     /// Returns the Haursoff Distance between the given intervals
     /// https://en.wikipedia.org/wiki/Hausdorff_distance
-    let inline haursoff a b = 
+    [<CompiledName("Haursoff")>]
+    let inline haursoff (a: ^t Range) (b: ^t Range) : ^u = 
         let delta = 
             if a > b then sub a b else sub b a
         hi delta
@@ -589,7 +594,7 @@ type Range<'t when 't:comparison> with
         Range.bisect this (Range.ofPoint point)    
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
-    member this.Relation(that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
+    member this.RelationTo(that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
         if inverse then
             Range.relation that this
         else
@@ -597,96 +602,16 @@ type Range<'t when 't:comparison> with
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
     member this.Relation(b: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
-        this.Relation(Range.ofPoint b, inverse)
+        this.RelationTo(Range.ofPoint b, inverse)
     
     /// Check if the relationship holds between the two ranges
-    member this.HasRelation(relation:Relation, that: 't Range) : bool =
-       this.Relation(that) = relation
+    member this.HasRelation(relation:Relation, that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
+       this.RelationTo(that, inverse) = relation
     
     /// Check if the relationship holds between the two ranges
-    member this.HasRelation(relation:Relation, point: 't) : bool =
+    member this.HasRelation(relation:Relation, point: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
        this.HasRelation(relation, Range.ofPoint point)
     
-    /// Returns true if RangeRelation.Before holds
-    member this.Before(that: 't Range) : bool =
-       this.HasRelation(Relation.Before, that)
-    
-    /// Returns true if RangeRelation.After holds
-    member this.After(that: 't Range) : bool =
-       this.HasRelation(Relation.After, that)
-    
-    /// Returns true if RangeRelation.Starts holds
-    member this.Starts(that: 't Range) : bool =
-       this.HasRelation(Relation.Starts, that)
-    
-    /// Returns true if RangeRelation.StartedBy holds
-    member this.StartedBy(that: 't Range) : bool =
-       this.HasRelation(Relation.StartedBy, that)
-    
-    /// Returns true if RangeRelation.Finishes holds
-    member this.Finishes(r, that: 't Range) : bool =
-       this.HasRelation(Relation.Finishes, that)
-    
-    /// Returns true if RangeRelation.FinishedBy holds
-    member this.FinishedBy(that: 't Range) : bool =
-       this.HasRelation(Relation.FinishedBy, that)
-    
-    /// Returns true if RangeRelation.MeetsStart holds
-    member this.MeetsStart(that: 't Range) : bool =
-       this.HasRelation(Relation.MeetsStart, that)
-    
-    /// Returns true if RangeRelation.MeetsEnd holds
-    member this.MeetsEnd(that: 't Range) : bool =
-       this.HasRelation(Relation.MeetsEnd, that)
-    
-    /// Returns true if RangeRelation.OverlapsStart holds
-    member this.OverlapsStart(that: 't Range) : bool =
-       this.HasRelation(Relation.OverlapsStart, that)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.OverlapsEnd(that: 't Range) : bool =
-       this.HasRelation(Relation.OverlapsEnd, that)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.Before(point: 't) : bool =
-       this.HasRelation(Relation.Before, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.After(point: 't) : bool =
-       this.HasRelation(Relation.After, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.Starts(point: 't) : bool =
-       this.HasRelation(Relation.Starts, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.StartedBy(point: 't) : bool =
-       this.HasRelation(Relation.StartedBy, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.Finishes(point: 't) : bool =
-       this.HasRelation(Relation.Finishes, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.FinishedBy(point: 't) : bool =
-       this.HasRelation(Relation.FinishedBy, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.MeetsStart(point: 't) : bool =
-       this.HasRelation(Relation.MeetsStart, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.MeetsEnd(point: 't) : bool =
-       this.HasRelation(Relation.MeetsEnd, Range.ofPoint point)
-    
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.OverlapsStart(point: 't) : bool =
-       this.HasRelation(Relation.OverlapsStart, Range.ofPoint point)
-   
-    /// Returns true if RangeRelation.OverlapsEnd holds
-    member this.OverlapsEnd(point: 't) : bool =
-       this.HasRelation(Relation.OverlapsEnd, Range.ofPoint point)
-   
     /// Returns true if the given range does not exceed the bound of this range
     member this.Contains(that: 't Range) : bool =
        Range.contains this that
@@ -756,7 +681,7 @@ type Extensions =
 
     [<Extension>]
     /// Returns the size of the range
-    static member inline Size(this) =
+    static member inline Size(this) : ^u =
         Range.size this
 
     [<Extension>]
