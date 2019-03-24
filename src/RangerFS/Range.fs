@@ -10,39 +10,79 @@ open System.Runtime.InteropServices
 /// Thrown if certain operations are performed on the Empty Range
 exception EmptyRangeException  
 
-/// For safe exposure outside F#
 type IRange<'t when 't:comparison> = 
+    abstract Lo : 't
+    abstract Hi : 't
     abstract IsEmpty : bool
-    abstract Lo: 't
-    abstract Hi: 't    
+    abstract IsPoint : bool
+
+type INonEmptyRange<'t when 't:comparison> =
+    inherit IRange<'t>
+
+[<Struct>]
+type NonEmptyRange<'t when 't:comparison> =
+    | Point_ of 't
+    | Range_ of lo:'t * hi: 't    
+
+    member r.Lo = 
+        match r with
+        | Point_ lo | Range_ (lo, _) -> lo
+
+    member r.Hi = 
+        match r with
+        | Point_ hi | Range_ (_, hi) -> hi
+
+    member r.IsPoint =
+        match r with
+        | Point_ _ -> true | _ -> false
+
+    interface INonEmptyRange<'t> with
+        member r.Lo = r.Lo
+        member r.Hi = r.Hi
+        member r.IsEmpty = false
+        member r.IsPoint = r.IsPoint
+
+    override r.ToString() =
+        match r with
+        | Point_ p       -> sprintf "{%O}" p
+        | Range_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
+
 
 [<Struct>]
 [<CustomComparison>]
 [<StructuralEquality>]
 /// A Range representing the values between a Lower and Upper Bound
 type Range<'t when 't : comparison> = 
-    private
-    | Empty_
-    | Point_ of 't
-    | Range_ of a:'t * b: 't    
+    | Empty_ 
+    | NonEmpty_ of NonEmptyRange<'t>
+
+    member this.Range =
+        match this.Option with
+        | ValueNone -> raise EmptyRangeException
+        | ValueSome r -> r
 
     /// The lower bound of the Range
-    member this.Lo : 't = Range.lo this
+    member this.Lo = this.Range.Lo
 
     /// The upper bound of the Range
-    member this.Hi : 't = Range.hi this
+    member this.Hi = this.Range.Hi
 
     /// Returns true if the given range is the Empty Range
-    member this.IsEmpty = Range.isEmpty this
+    member this.IsEmpty =
+        ValueOption.isNone this.Option
+
+    /// Returns true if the given range is NonEmpty
+    member this.IsNonEmpty = 
+        not this.IsEmpty
 
     /// Returns true if the Range contains a single value
-    member this.IsPoint = Range.isPoint this
+    member this.IsPoint = 
+        this.IsNonEmpty && this.Range.IsPoint
 
     override this.ToString() =
-        Range.show this
-
-    interface IRangeProvider<'t> with
-        member this.Range = this
+        this.Option
+        |> ValueOption.map string
+        |> ValueOption.defaultValue "{}"
 
     interface IComparable with
         member this.CompareTo(that) =
@@ -52,7 +92,7 @@ type Range<'t when 't : comparison> =
             | _ ->
                 failwith "Object was not a Range"                
 
-    interface IComparable<'t Range> with
+    interface IComparable<IRange<'t>> with
         member this.CompareTo(that) = 
             Range.compare this that
 
@@ -171,58 +211,39 @@ module Range =
     open Compare
     open Operators
 
-    /// ToString
-    let show (r: 't Range) : string =
-        match r with 
-        | Empty_         -> "{}"
-        | Point_ p       -> sprintf "{%O}" p
-        | Range_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
-
     /// Return the low value of the Range 
-    [<CompiledName("Lo")>]
-    let lo (r: 't Range) : 't =
-        match r with
-        | Range_ (x, _) 
-        | Point_ x -> x
-        | Empty_ -> raise EmptyRangeException
+    let lo (r: #IRange<'t>) : 't =
+        r.Lo
 
     /// Return the high value of the range
-    [<CompiledName("Hi")>]
-    let hi (r: 't Range) : 't =
-        match r with
-        | Range_ (_, x) 
-        | Point_ x -> x
-        | Empty_ -> raise EmptyRangeException
+    let hi (r: #IRange<'t>) : 't =
+        r.Hi
 
     /// Return the size of the Range
-    [<CompiledName("Size")>]
-    let inline size (r: ^t Range) : ^u =
+    let inline size (r: #IRange< ^t>) : ^u =
         r.Hi - r.Lo
 
     /// Returns true if the given range is Empty
-    [<CompiledName("IsEmpty")>]
-    let isEmpty (r: 't Range) : bool = 
-        r = Empty_
+    let isEmpty (r: #IRange<'t>) : bool = 
+        r.IsEmpty
 
-    /// Returns true if the bounds are equals
-    [<CompiledName("IsPoint")>]
-    let isPoint (r: 't Range) : bool = 
-        match r with
-        | Point_ _ -> true 
-        | _ -> false
+    /// Returns true if the given range is a Point
+    let isPoint (r: #IRange<'t>) : bool = 
+        r.IsPoint
+
+    let private make range = 
+        { Option = range }
 
     /// The Empty Range
-    [<CompiledName("Empty")>]
-    let empty : 't Range = Empty_
+    let empty : 't Range = 
+        make ValueNone
 
     /// Construct a Range of a single value
-    [<CompiledName("Create")>]
-    let ofPoint (p: 't) : 't Range =
+    let ofPoint (p: 't) : NonEmptyRange<'t> =
         Point_ p
 
     /// Construct a Range that spans the given bounds
-    [<CompiledName("Create")>]
-    let ofBounds (lo: 't) (hi: 't) : 't Range =
+    let ofBounds (lo: 't) (hi: 't) : NonEmptyRange<'t> =
         match cmp lo hi with
         | LT -> Range_ (lo, hi)
         | EQ -> Point_ lo
@@ -234,42 +255,39 @@ module Range =
         ofBounds p -p
 
     /// Construct a Range that is non empty only if lo <= hi
-    let internal ofOrdered (lo: 't) (hi: 't) : 't Range =        
+    let internal ofOrdered (lo: 't) (hi: 't) : Range<'t> =
         match cmp lo hi with
-        | LT -> Range_ (lo, hi)
-        | EQ -> Point_ lo
-        | GT -> Empty_
+        | LT -> make <| ValueSome (Range_ (lo, hi))
+        | EQ -> make <| ValueSome (Point_ lo)
+        | GT -> empty
 
     /// Construct a Range with a single bound and a size
-    [<CompiledName("OfSize")>]
-    let inline ofSize (delta: ^d) (p: ^t)  : ^t Range = 
+    let inline ofSize (delta: ^d) (p: ^t)  : NonEmptyRange< ^t> = 
         p <=> (p + delta)
 
     /// Construct a Range from a sequence of comparable items
-    [<CompiledName("Create")>]
-    let ofSeq(xs: #seq<'t>) : 't Range =
+    let ofSeq(xs: #seq<'t>) : Range<'t> =
         xs 
         |> Seq.map ofPoint
         |> unionMany
 
     /// Returns the Zero range
-    [<CompiledName("Zero")>]
-    let inline zero () = 
+    let inline zero () : NonEmptyRange<'t> = 
         ofPoint LanguagePrimitives.GenericZero
 
     /// Returns the Zero range
-    [<CompiledName("One")>]
-    let inline one () = 
+    let inline one () : NonEmptyRange<'t> = 
         ofPoint LanguagePrimitives.GenericOne
 
     /// Returns the relation from a to b
-    [<CompiledName("Relation")>]
-    let relation (a: 't Range) (b: 't Range) : Relation =    
-        match (a, b) with
-        | Empty_, Empty_ -> Relation.Equal
-        | Empty_, _ -> Relation.Empty
-        | _, Empty_ -> Relation.Empty
-        | _, _->
+    let relation (a: #IRange<'t>) (b: #IRange<'t>) : Relation =    
+        if   a.IsEmpty || b.IsEmpty 
+            then Relation.Equal
+        else if a.IsEmpty 
+            then Relation.Empty
+        else if b.IsEmpty 
+            then Relation.Empty
+        else
             match (cmp a.Lo b.Lo, cmp a.Hi b.Hi) with
             
             | EQ, EQ -> Relation.Equal
@@ -289,7 +307,6 @@ module Range =
             | GT, GT -> Relation.After 
 
     /// Returns the union of two Ranges
-    [<CompiledName("Union")>]
     let union (a: 't Range) (b: 't Range) : 't Range =
         if      a.IsEmpty then b
         else if b.IsEmpty then a
@@ -467,7 +484,7 @@ module Range =
             b |> map (fun b' -> f a' b'))
 
     /// Ranges are ordered by LowerBound first then UpperBound
-    let compare this that : int = 
+    let compare (this: #IRange<'t>) (that: #IRange<'t>): int = 
         if this.IsEmpty       then -1
         else if that.IsEmpty  then 1
         else 
