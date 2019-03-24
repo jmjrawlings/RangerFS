@@ -188,7 +188,7 @@ module RelationTests =
         testCase (string expected) <| fun () ->
             Expect.equal actual expected (sprintf "relation test %O vs %O" x y)
 
-    let private inverseTest : Test = 
+    let inverseTest : Test = 
         
         let inline test (a: int Range) (b: int Range) =
             let fwd = Range.relation a b
@@ -212,15 +212,19 @@ module RelationTests =
 
         testProp "inverse" test
 
+    
+
     let equalTest : Test =
         testProp "equals" <| fun (r : int Range) ->
             (Range.relation r r) = Relation.Equal
-            
+
 
     [<Tests>]
     let tests = 
         testList "relations" [
             equalTest
+
+            inverseTest
 
             makeTest
                 [x;x;x;x;x;o;o;o]

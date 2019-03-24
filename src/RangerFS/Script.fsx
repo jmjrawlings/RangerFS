@@ -4,6 +4,6 @@ open Ranger
 open Ranger.Operators
 
 let a = 5 <=> 10
-let b = 2 <=> 4
-let c = Range.haursoff b a
-Range.ofSymmetric 100
+let b = 4 <~> 2
+let c = Range.intersection a b
+Range.intersects a b

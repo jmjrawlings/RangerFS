@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net451;net472</TargetFrameworks>
     <RootNamespace>RangerFS</RootNamespace>
     <AssemblyName>RangerFS</AssemblyName>
     <Name>RangerFS</Name>
@@ -17,6 +17,7 @@
     <EmbeddedResource Remove="Scripts\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Script.fsx" />
     <Compile Include="Range.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />

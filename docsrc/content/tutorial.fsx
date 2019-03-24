@@ -19,7 +19,7 @@ open Ranger.Operators
 (**
 # Constructing Ranges
 
-The primary constructor of `Range<'t>` is `Range.ofBounds` or it's operator equivalent `<=>`
+The primary constructor of `Range<'t>` is `Range.ofBounds` or the equivalent operator `<=>`
 *)
 
 (*** define-output:a ***)
@@ -40,6 +40,7 @@ printf "%O" (c = d)
 (** The special case where `range.Lo = range.Hi` is referred to as a `Point` and can be constructed by
 `Range.ofPoint` or it's operator equivalent `!` *)
 (*** define-output:c ***)
+// The following are all equivalent
 let e = Range.ofPoint 2.5
 let f = !2.5
 let g = Range.ofBounds 2.5 2.5

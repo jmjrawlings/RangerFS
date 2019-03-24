@@ -34,7 +34,7 @@ let description = "A library for generic interval arithmetic"
 let author = "Justin Rawlings"
 
 // Tags for your project (for NuGet package)
-let tags = "intervals fsharp dotnetcore dotnet"
+let tags = "Interval, FSharp, DotNetCore, DotNet"
 
 // File system information
 let solutionFile  = "RangerFS.sln"
@@ -115,7 +115,7 @@ Target.create "CopyBinaries" <| fun _ ->
 let buildConfiguration = 
     configuration
     |> Environment.environVarOrDefault "configuration" 
-    |> DotNet.Custom 
+    |> DotNet.BuildConfiguration.Custom
 
 Target.create "Clean" <| fun _ ->
     Shell.cleanDirs ["bin"; "temp"]
@@ -126,31 +126,26 @@ Target.create "CleanDocs" <| fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target.create "Restore" <| fun _ ->
-    solutionFile
-    |> DotNet.restore id
-
 Target.create "Build" <| fun _ ->
 
-    let setParams (defaults:MSBuildParams) =
-        { defaults with
-            Verbosity = Some(Quiet)
-            Targets = ["Build"]
-            Properties =
-                [
-                    "Optimize", "True"
-                    "DebugSymbols", "True"
-                    "Configuration", configuration
-                ]
-         }
+    let options =
+        DotNet.Options.Create()
+        |> DotNet.Options.withVerbosity (Some DotNet.Verbosity.Quiet)
+        |> DotNet.Options.withCustomParams (Some "-property:Optimize=True -property:DebugSymbols=True")
 
-    MSBuild.build setParams solutionFile
+    let setParams (defaults: DotNet.BuildOptions) =
+        { defaults with
+            Configuration = buildConfiguration
+            Common = options }
+
+    solutionFile
+    |> DotNet.build setParams
+    
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
 Target.create "RunTests" <| fun _ ->
-    let assemblies = !! testAssemblies
 
     let setParams f =
         match Environment.isWindows with
@@ -163,7 +158,8 @@ Target.create "RunTests" <| fun _ ->
                 { p with
                     FileName = "mono"
                     Arguments = f }
-    assemblies
+                    
+    !! testAssemblies
     |> Seq.map (fun f ->
         Process.execSimple (setParams f) System.TimeSpan.MaxValue
     )
@@ -408,7 +404,6 @@ Target.create "All" ignore
 
 "Clean"
   ==> "AssemblyInfo"
-  ==> "Restore"
   ==> "Build"
   ==> "CopyBinaries"
   ==> "RunTests"

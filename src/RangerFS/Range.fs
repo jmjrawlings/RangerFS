@@ -7,7 +7,7 @@ open System.Runtime.InteropServices
 
 #nowarn "0342"
 
-/// For operations performed on the Empty Range
+/// Thrown if certain operations are performed on the Empty Range
 exception EmptyRangeException  
 
 /// For safe exposure outside F#
@@ -19,7 +19,6 @@ type IRange<'t when 't:comparison> =
 [<Struct>]
 [<CustomComparison>]
 [<StructuralEquality>]
-[<StructuredFormatDisplay("{Description}")>]
 /// A Range representing the values between a Lower and Upper Bound
 type Range<'t when 't : comparison> = 
     private
@@ -38,8 +37,6 @@ type Range<'t when 't : comparison> =
 
     /// Returns true if the Range contains a single value
     member this.IsPoint = Range.isPoint this
-
-    member private this.Description = Range.show this
 
     override this.ToString() =
         Range.show this
@@ -727,8 +724,10 @@ type Extensions =
         
     [<Extension>]    
     /// Create a Range between the given points
-     static member ToRange (a: 't, b: 't) : 't Range =  
-        Range.ofBounds a b
+     static member ToRange (a: 't, b: 't, [<Optional;DefaultParameterValue(false)>] forceOrder:bool) : 't Range =  
+        if forceOrder 
+        then Range.ofOrdered a b
+        else Range.ofBounds a b
 
     [<Extension>]    
     /// Create a Range between the given points
