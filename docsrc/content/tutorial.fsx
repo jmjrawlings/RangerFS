@@ -1,7 +1,7 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin/RangerFS/net47"
+#I "../../bin/RangerFS/net451"
 
 (**
 RangerFS in 5 minutes
@@ -12,7 +12,7 @@ the `.dll` in F# Interactive and open the `Ranger` namespace.
 
 *)
 #r "RangerFS.dll"
-
+open System
 open Ranger
 open Ranger.Operators
 
@@ -44,13 +44,24 @@ printf "%O" (c = d)
 let e = Range.ofPoint 2.5
 let f = !2.5
 let g = Range.ofBounds 2.5 2.5
+let h = (2.5).ToRange()
 
-printf "%O = %O = %O" e f g 
+printf "%O = %O = %O = %O" e f g h
 (*** include-output:c ***)
 
 (** We can also construct a `Range` from a sequence of points with `Range.ofSeq` *)
-let h = Range.ofSeq [ 7; 5; -2; -100; 50; 75]
+let i = Range.ofSeq [ 7; 5; -2; -100; 50; 75]
 (*** include-value:h ***)
 
-let i = Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
+let j = Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
+
 (*** include-value:i ***)
+
+(** `Ranges` of a certain magnitude may be constructed using `Range.ofSize` **)
+let k = 0.1 |> Range.ofSize 0.5 // {0.1 .. 0.6}
+let l = 
+    DateTime.Today
+    |> Range.ofSize (TimeSpan.FromDays 14.) // The next fortnight
+
+let fourteenDays = Range.size l
+
