@@ -185,3 +185,4 @@ docsrc/content/release-notes.md
 .ionide/
 docsrc/tools/FSharp.Formatting.svclog
 temp/
+.ionide/symbolCache.db
