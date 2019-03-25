@@ -59,9 +59,72 @@ let j = Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j']
 
 (** `Ranges` of a certain magnitude may be constructed using `Range.ofSize` **)
 let k = 0.1 |> Range.ofSize 0.5 // {0.1 .. 0.6}
-let l = 
+let aFortnight = 
     DateTime.Today
     |> Range.ofSize (TimeSpan.FromDays 14.) // The next fortnight
 
-let fourteenDays = Range.size l
+(** The size of a range may retrieved with `Range.ofSize` **)
+let fourteenDays = Range.size aFortnight
+(*** include-value:fourteenDays ***)
 
+(**
+# Relations 
+
+The primary method of comparing `Ranges` is `Range.relation` which returns a `Relation`.  The members of `Range.Relation`.
+`Range.relation` represent a complete enumeration of the possible ways in which two `Ranges` may be related.
+
+You can read more at [Allen's Interval Algebra](https://en.wikipedia.org/wiki/Allen%27s_interval_algebra
+*)
+
+let r1 = Range.relation (0 <=> 5) (6 <=> 8) // Relation.Before
+let r2 = Range.relation (6 <=> 8) (0 <=> 5) // Relation.After
+let r3 = Range.relation (0 <=> 3) (0 <=> 5) // Relation.Starts
+let r4 = Range.relation (0 <=> 5) (0 <=> 3) // Relation.StartedBy
+let r5 = Range.relation (4 <=> 5) (0 <=> 5) // Relation.Finishes
+let r6 = Range.relation (0 <=> 5) (4 <=> 5) // Relation.FinshedBy
+let r7 = Range.relation (0 <=> 5) (5 <=> 10) // Relation.MeetsStarts
+let r8 = Range.relation (5 <=> 10) (0 <=> 5) // Relation.MeetsEnd
+let r9 = Range.relation (3 <=> 6) (5 <=> 8) // Relation.OverlapsStart
+let r10 = Range.relation (5 <=> 8) (3 <=> 6) // Relation.OverlapsEnd
+let r11 = Range.relation (3 <=> 4) (0 <=> 5) // Relation.Within
+let r12 = Range.relation (0 <=> 5) (3 <=> 4) // Relation.Contains
+let r13 = Range.relation (0 <=> 5) Range.empty // Relation.Empty
+
+(**
+Relations may also be constructed and examined through `range.Relation(other)` and `range.HasRelation(relation, other)`.
+These methods are overloaded for so you may compare against `Range<'t>` or just a point of `t`.
+*)
+
+let rr1 = (0 <=> 10).Relation(11) // Relation.Before
+let rr2 = (0 <=> 10).Relation(12 <=> 16) // Relation.Before
+let rr3 = (100).ToRange().Relation(200, inverse=true) // Relation.After
+let rr4 = (!50.0).HasRelation(Relation.Starts, 50.0 <=> 51.5) // true
+
+(**
+# Algebra
+
+`RangerFS` supports all major operators.  Binary operators are implemented as the `union` of the
+results of applying the operator to each pair of bounds:
+
+`op r1 r2 = unionMany [op r1.Lo r2.Lo; op r1.Lo r2.Hi; op r1.Hi r2.Lo; op r1.Hi r2.Hi]`
+*)
+
+let op1 = !2 + !2 // {4}
+let op2 = (0 <=> 10) + (10 <=> 20) // {0..30}
+let op3 = (2 <=> 4) / 2 // {1..2}
+let op4 = (3.5 <=> 4.5) // 0.5 // {0.7 .. 0.9}
+let op5 = (100 <=> 200) * (2 <=> 5) // {200..1000}
+let op6 = (0 <=> 10) - (0 <=> 10) // {0..10}
+let op7 = abs (-100 <=> 100) // {100}
+let op8 = -(12.0 <=> 12.1) // {-12.1..12.0}
+
+(**
+# Other Functions
+*)
+
+let o1 = Range.buffer 5 (20 <=> 25) // {15 .. 30}
+let o2 = Range.ofSymmetric 3.1 // {-3.1 .. 3.1}
+let o3 = Range.step 0.1 (0.0 <=> 0.5) // [0.0; 0.1; 0.2; 0.3; 0.4; 0.5]
+let o4 = Range.bisect (0 <=> 10) (!6) // {0..6}, {6..10}
+let o5 = Range.bisect (10 <=> 90) (20 <=> 25) // {10..20}, {25..90}
+let o6 = Range.partition 4.0 (0.0 <=> 8.0) // [{0..2},{2..4},{4..6},{6..8}]

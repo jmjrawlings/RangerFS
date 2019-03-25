@@ -14,7 +14,7 @@ exception EmptyRangeException
 type IRange<'t when 't:comparison> = 
     abstract IsEmpty : bool
     abstract Lo: 't
-    abstract Hi: 't    
+    abstract Hi: 't
 
 [<Struct>]
 [<CustomComparison>]
@@ -594,7 +594,7 @@ type Range<'t when 't:comparison> with
         Range.bisect this (Range.ofPoint point)    
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
-    member this.RelationTo(that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
+    member this.Relation(that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
         if inverse then
             Range.relation that this
         else
@@ -602,11 +602,11 @@ type Range<'t when 't:comparison> with
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
     member this.Relation(b: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
-        this.RelationTo(Range.ofPoint b, inverse)
+        this.Relation(Range.ofPoint b, inverse)
     
     /// Check if the relationship holds between the two ranges
     member this.HasRelation(relation:Relation, that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
-       this.RelationTo(that, inverse) = relation
+       this.Relation(that, inverse) = relation
     
     /// Check if the relationship holds between the two ranges
     member this.HasRelation(relation:Relation, point: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
