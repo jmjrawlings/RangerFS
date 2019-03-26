@@ -105,10 +105,17 @@ let rr4 = (!50.0).HasRelation(Relation.Starts, 50.0 <=> 51.5) // true
 (**
 # Algebra
 
-`RangerFS` supports all major operators.  Binary operators are implemented as the `union` of the
-results of applying the operator to each pair of bounds:
+`RangerFS` supports [arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) for all major operators.
+Binary operators are applied as:
 
-`op r1 r2 = unionMany [op r1.Lo r2.Lo; op r1.Lo r2.Hi; op r1.Hi r2.Lo; op r1.Hi r2.Hi]`
+```
+op a b = unionMany 
+    [op a.Lo b.Lo
+     op a.Lo b.Hi
+     op a.Hi b.Lo
+     op a.Hi b.Hi]
+```
+
 *)
 
 let op1 = !2 + !2 // {4}
@@ -119,11 +126,11 @@ let op5 = (100 <=> 200) * (2 <=> 5) // {200..1000}
 let op6 = (0 <=> 10) - (0 <=> 10) // {0..10}
 let op7 = abs (-100 <=> 100) // {100}
 let op8 = -(12.0 <=> 12.1) // {-12.1..12.0}
+let op9 = (10 <=> 20) / 0 // DivideByZeroException
 
 (**
 # Other Functions
 *)
-
 let o1 = Range.buffer 5 (20 <=> 25) // {15 .. 30}
 let o2 = Range.ofSymmetric 3.1 // {-3.1 .. 3.1}
 let o3 = Range.step 0.1 (0.0 <=> 0.5) // [0.0; 0.1; 0.2; 0.3; 0.4; 0.5]
