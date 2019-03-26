@@ -317,7 +317,7 @@ module Range =
     /// Returns true if a does not exceed the bounds of b
     [<CompiledName("Within")>]
     let within (a: 't Range) (b: 't Range) : bool = 
-        not (contains b a)
+        contains b a
         
     /// Returns true if the given Range intersect
     [<CompiledName("Intersects")>]
@@ -349,11 +349,14 @@ module Range =
         iterate ((+) delta) r
 
     /// Iterate with a step of (range.Size / n)
+    /// partition 4 {0..6.0} = [{0..1.5};{1.5..3.0};{3.0..4.5};{4.5..6.0}]
     [<CompiledName("Partition")>]
     let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
         if r.IsEmpty then Seq.empty else
 
-        let delta = (Range.size r) / n
+        let delta : ^t = 
+            (Range.size r) / n
+            
         r
         |> step delta
         |> Seq.pairwise
@@ -363,9 +366,12 @@ module Range =
     /// Apply the given functions to the lower and upper bounds of the Range
     let map2 (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
         match r with
-        | Empty_ -> Empty_
-        | Point_ p -> (fLo p) <=> (fHi p)
-        | Range_ (lo, hi) -> (fLo lo) <=> (fHi hi)
+        | Empty_ ->
+            Empty_
+        | Point_ p -> 
+            (fLo p) <=> (fHi p)
+        | Range_ (lo, hi) ->
+            (fLo lo) <=> (fHi hi)
 
     [<CompiledName("Map")>]
     /// Apply the given function to the lower and upper bounds of the Range
