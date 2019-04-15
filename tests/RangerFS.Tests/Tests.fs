@@ -21,13 +21,13 @@ module ConstructionTests =
         
           testProp "creation is order agnostic"
             <| fun (lo: 't, hi: 't) ->
-                (Range.ofBounds lo hi) = (Range.ofBounds hi lo)
+                (Range.of2 lo hi) = (Range.of2 hi lo)
 
           testProp "ofPoint x = ofBounds x x"
             <| fun (x: 't) ->
-                let r1 = Range.ofBounds x x
-                let r2 = Range.ofPoint x
-                r1 = r2 && r1.IsPoint && r2.IsPoint
+                let r1 = Range.of2 x x
+                let r2 = Range.singleton x
+                r1 = r2 && r1.IsSingleton && r2.IsSingleton
 
           testProp "ofSeq works"
             <| fun (xs: 't list) ->
@@ -79,7 +79,7 @@ module LogicTests =
                     | xs ->
                         let lo = List.min xs
                         let hi = List.max xs
-                        (Range.ofSeq xs) = (Range.ofBounds lo hi)
+                        (Range.ofSeq xs) = (Range.of2 lo hi)
 
             testProp "range intersects itself "
                 <| fun (r: 't Range) ->
@@ -91,8 +91,8 @@ module LogicTests =
 
             testProp "points dont intersect"
                 <| fun (a:'t, b:'t) ->
-                    let a' = Range.ofPoint a
-                    let b' = Range.ofPoint b 
+                    let a' = Range.singleton a
+                    let b' = Range.singleton b 
                     if a < b || b < a then
                         not (Range.intersects a' b')
                     else
@@ -101,7 +101,7 @@ module LogicTests =
             testProp "map id = id"
                 <| fun (r: 't Range) ->
                     r
-                    |> Range.map id
+                    |> Range.map1 id
                     |> (=) r
 
             testProp "union of lo is same" 
@@ -114,17 +114,17 @@ module LogicTests =
 
             testProp "bisect by lower bound"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    let struct(a,b) = r.Bisect(r.Lo)
+                    let (a,b) = r.Bisect(r.Lo)
                     (a = !r.Lo) && (b = r)
                         
             testProp "bisect by upper bound"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    let struct(a,b) = r.Bisect(r.Hi)
+                    let (a,b) = r.Bisect(r.Hi)
                     (b = !r.Hi) && (a = r)
 
             testProp "bisecting by self is the bounds"
                 <| fun ({Range=r}: 't NonEmptyRange) ->
-                    let struct(a,b) = Range.bisect r r
+                    let (a,b) = Range.bisect r r
                     (a = !r.Lo) && (b = !r.Hi)
                     
         ]
@@ -177,7 +177,7 @@ module RelationTests =
         let hi = List.tryFindIndexBack ((=) x) xs
         match (lo, hi) with
         | Some lo', Some hi' ->
-            Range.ofBounds lo' hi'
+            Range.of2 lo' hi'
         | _ -> Range.empty
 
     let private makeTest x y (expected:Relation) : Test = 
@@ -311,7 +311,7 @@ module InlineTests =
                 Expect.equal b c ""
 
             testCase "subtraction" <| fun () ->
-                let a = 5.0 <=> -5.0
+                let a = 5.0 <~> -5.0
                 let b = a - 0.5
                 let c = -5.5 <=> 4.5
                 Expect.equal b c ""

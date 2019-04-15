@@ -23,8 +23,8 @@ type IRange<'t when 't:comparison> =
 type Range<'t when 't : comparison> = 
     private
     | Empty_
-    | Point_ of 't
-    | Range_ of a:'t * b: 't    
+    | Singleton_ of 't
+    | Bounds_ of lo:'t * hi: 't    
 
     /// The lower bound of the Range
     member this.Lo : 't = Range.lo this
@@ -36,10 +36,13 @@ type Range<'t when 't : comparison> =
     member this.IsEmpty = Range.isEmpty this
 
     /// Returns true if the Range contains a single value
-    member this.IsPoint = Range.isPoint this
+    member this.IsSingleton = Range.isSingleton this
 
     override this.ToString() =
-        Range.show this
+        match this with 
+        | Empty_         -> "{}"
+        | Singleton_ p       -> sprintf "{%O}" p
+        | Bounds_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
 
     interface IComparable with
         member this.CompareTo(that) =
@@ -128,9 +131,8 @@ type Relation =
 
 module Operators = 
     let (<=>) a b = Range.ofBounds a b
-    let (<~>) a b = Range.ofOrdered a b
-    let (!) p     = Range.ofPoint p
-    let (++) a b  = Range.union a b
+    let (<~>) a b = Range.of2 a b
+    let (!) p     = Range.singleton p
 
 /// Helper functions for comparisons
 module private Compare = 
@@ -138,7 +140,7 @@ module private Compare =
     [<Struct>]
     type Comparison =
         | LT | GT | EQ 
-        member this.Value = 
+        member this.AsInt = 
             match this with
             | LT -> -1
             | GT -> 1
@@ -151,110 +153,104 @@ module private Compare =
         if a < b then a else b
 
     let inline cmp a b : Comparison = 
-        let c = compare a b
-        if      c < 0 then LT
-        else if c > 0 then GT
+        if      a < b then LT
+        else if a > b then GT
         else    EQ
 
 
 [<RequireQualifiedAccess>]    
 module Range = 
-    open Operators
+
     open Compare
 
-    /// ToString
-    let show (r: 't Range) : string =
-        match r with 
-        | Empty_         -> "{}"
-        | Point_ p       -> sprintf "{%O}" p
-        | Range_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
-
     /// Return the low value of the Range 
-    [<CompiledName("Lo")>]
     let lo (r: 't Range) : 't =
         match r with
-        | Range_ (x, _) 
-        | Point_ x -> x
+        | Bounds_ (x, _) 
+        | Singleton_ x -> x
         | Empty_ -> raise EmptyRangeException
 
     /// Return the high value of the range
-    [<CompiledName("Hi")>]
     let hi (r: 't Range) : 't =
         match r with
-        | Range_ (_, x) 
-        | Point_ x -> x
+        | Bounds_ (_, x) 
+        | Singleton_ x -> x
         | Empty_ -> raise EmptyRangeException
 
     /// Return the size of the Range
-    [<CompiledName("Size")>]
     let inline size (r: ^t Range) : ^u =
         r.Hi - r.Lo
 
     /// Returns true if the given range is Empty
-    [<CompiledName("IsEmpty")>]
     let isEmpty (r: 't Range) : bool = 
         r = Empty_
 
     /// Returns true if the bounds are equals
-    [<CompiledName("IsPoint")>]
-    let isPoint (r: 't Range) : bool = 
+    let isSingleton (r: 't Range) : bool = 
         match r with
-        | Point_ _ -> true 
+        | Singleton_ _ -> true 
         | _ -> false
 
     /// The Empty Range
-    [<CompiledName("Empty")>]
     let empty : 't Range = Empty_
 
     /// Construct a Range of a single value
-    [<CompiledName("Create")>]
-    let ofPoint (p: 't) : 't Range =
-        Point_ p
-
-    /// Construct a Range that spans the given bounds
-    [<CompiledName("Create")>]
-    let ofBounds (lo: 't) (hi: 't) : 't Range =
-        match cmp lo hi with
-        | LT -> Range_ (lo, hi)
-        | EQ -> Point_ lo
-        | GT -> Range_ (hi, lo)
-
-    /// ofSymmetric 3 = {-3..3}
-    [<CompiledName("OfSymmetric")>]
-    let inline ofSymmetric p =
-        ofBounds p -p
+    let singleton (p: 't) : 't Range =
+        Singleton_ p
 
     /// Construct a Range that is non empty only if lo <= hi
-    let internal ofOrdered (lo: 't) (hi: 't) : 't Range =        
+    let internal ofBounds (lo: 't) (hi: 't) : 't Range =        
         match cmp lo hi with
-        | LT -> Range_ (lo, hi)
-        | EQ -> Point_ lo
+        | LT -> Bounds_ (lo, hi)
+        | EQ -> Singleton_ lo
         | GT -> Empty_
 
+    /// Construct a Range that spans the given bounds
+    let of2 (a: 't) (b: 't) : 't Range =
+        match cmp a b with
+        | LT -> Bounds_ (a, b)
+        | EQ -> Singleton_ a
+        | GT -> Bounds_ (b, a)
+
+    /// Construct a Range from the given Tuple
+    let ofTuple (a,b) = 
+        ofBounds a b
+
+    /// ofSymmetric 3 = {-3..3}
+    let inline ofSymmetric p =
+        of2 p -p
+
     /// Construct a Range with a single bound and a size
-    [<CompiledName("OfSize")>]
     let inline ofSize (delta: ^d) (p: ^t)  : ^t Range = 
-        p <=> (p + delta)
+        of2 p (p + delta)
 
     /// Construct a Range from a sequence of comparable items
-    [<CompiledName("Create")>]
     let ofSeq(xs: #seq<'t>) : 't Range =
         xs 
-        |> Seq.map ofPoint
+        |> Seq.map singleton
         |> unionMany
 
-    /// Returns the Zero range
-    [<CompiledName("Zero")>]
-    let inline zero () = 
-        ofPoint LanguagePrimitives.GenericZero
+    let toList (r: 't Range) : 't list = 
+        match r with
+        | Empty_ -> []
+        | Singleton_ p -> [ p ]
+        | Bounds_ (lo,hi) -> [lo; hi]
+
+    let toSeq (r: 't Range) : 't seq =
+        r
+        |> toList
+        |> Seq.ofList
+
 
     /// Returns the Zero range
-    [<CompiledName("One")>]
+    let inline zero () = 
+        singleton LanguagePrimitives.GenericZero
+
+    /// Returns the Zero range
     let inline one () = 
-        ofPoint LanguagePrimitives.GenericOne
+        singleton LanguagePrimitives.GenericOne
 
     /// Returns the relation from a to b
-    [<CompiledName("Relation")>]
     let relation (a: 't Range) (b: 't Range) : Relation =    
         match (a, b) with
         | Empty_, Empty_ -> Relation.Equal
@@ -287,7 +283,7 @@ module Range =
         else 
             let lo = min a.Lo b.Lo
             let hi = max a.Hi b.Hi
-            lo <=> hi
+            of2 lo hi
 
     /// Returns the union of many ranges
     [<CompiledName("UnionMany")>]
@@ -295,16 +291,14 @@ module Range =
         Seq.fold union empty ranges
 
     /// Returns the intersection of the given ranges
-    [<CompiledName("Intersection")>]
     let intersection (a: 't Range) (b: 't Range) : 't Range = 
         if a.IsEmpty || b.IsEmpty  then empty else 
     
         let lo = max a.Lo b.Lo
         let hi = min a.Hi b.Hi
-        lo <~> hi
+        ofBounds lo  hi
 
     /// Returns true if b does not exceed the bounds of a
-    [<CompiledName("Contains")>]
     let contains (a: 't Range) (b: 't Range) : bool =
         match relation a b with
         | Relation.Before 
@@ -315,12 +309,10 @@ module Range =
         | _ -> true
 
     /// Returns true if a does not exceed the bounds of b
-    [<CompiledName("Within")>]
     let within (a: 't Range) (b: 't Range) : bool = 
         contains b a
         
     /// Returns true if the given Range intersect
-    [<CompiledName("Intersects")>]
     let intersects (a: 't Range) (b: 't Range) : bool =
         match relation a b with 
         | Relation.After 
@@ -328,29 +320,21 @@ module Range =
         | _ -> true
 
     /// Returns true of the given Ranges do not intersect
-    [<CompiledName("Disjoint")>]
     let disjoint (a: 't Range) (b: 't Range) : bool =
         not (intersects a b)
 
     /// Iterate over the Range with the given step function
-    [<CompiledName("Iterate")>]
-    let iterate (step: 't -> 't) (r: 't Range) : 't seq =
+    let inline iterate step (r: 't Range) : 't seq =
         if r.IsEmpty then Seq.empty else 
         let lo = r.Lo
         let hi = r.Hi
         let mutable x = r.Lo
         seq { while (x <= hi && x >= lo) do
               yield x
-              x <- step x }
-
-    /// Iterate over the Range by the given Step Amount
-    [<CompiledName("Iterate")>]
-    let inline step delta (r: 't Range) : 't seq =
-        iterate ((+) delta) r
+              x <- (x + step) }
 
     /// Iterate with a step of (range.Size / n)
     /// partition 4 {0..6.0} = [{0..1.5};{1.5..3.0};{3.0..4.5};{4.5..6.0}]
-    [<CompiledName("Partition")>]
     let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
         if r.IsEmpty then Seq.empty else
 
@@ -358,55 +342,49 @@ module Range =
             (Range.size r) / n
             
         r
-        |> step delta
+        |> iterate delta
         |> Seq.pairwise
-        |> Seq.map (fun (a,b) -> ofBounds a b)
+        |> Seq.map (fun (a,b) -> of2 a b)
 
-    [<CompiledName("Map")>]
-    /// Apply the given functions to the lower and upper bounds of the Range
-    let map2 (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
-        match r with
-        | Empty_ ->
-            Empty_
-        | Point_ p -> 
-            (fLo p) <=> (fHi p)
-        | Range_ (lo, hi) ->
-            (fLo lo) <=> (fHi hi)
-
-    [<CompiledName("Map")>]
     /// Apply the given function to the lower and upper bounds of the Range
-    let map (f: 't -> 'u) (r: 't Range) : 'u Range =
-        map2 f f r
+    let map (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
+        if r.IsEmpty
+        then empty
+        else of2 (fLo r.Lo) (fHi r.Hi)
 
-    [<CompiledName("Bind")>]
-    /// Standard bind operator
-    let bind2 (fLo: 't -> 'u Range) (fHi: 't -> 'u Range) (r: 't Range) : 'u Range =
-        if r.IsEmpty 
-        then Empty_
-        else (fLo r.Lo) ++ (fHi r.Hi)
-
-    /// Standard bind operator
-    [<CompiledName("Bind")>]
-    let bind (f: 't -> 'u Range) (r: 't Range) : 'u Range = 
-        bind2 f f r
-        
     /// Apply the given function to the Lo value of the Range
-    [<CompiledName("MapLo")>]
     let mapLo (f: 't -> 't) (r: 't Range) : 't Range = 
-         map2 f id r
+         map f id r
 
     /// Apply the given function to the Hi value of the Range
-    [<CompiledName("MapHi")>]
     let mapHi (f: 't -> 't) (r: 't Range) : 't Range = 
-        map2 id f r
+        map id f r
+
+    /// Apply the given function to the Range
+    let map1 f r = map f f r
+
+    /// Apply the given functions to the lower and upper bounds of the Range
+    let map2 (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
+        a |> bind1 (fun a' -> 
+            b |> map1 (fun b' ->
+                f a' b'
+                ))
+
+    /// Standard bind operator
+    let bind (fLo: 't -> 'u Range) (fHi: 't -> 'u Range) (r: 't Range) : 'u Range =
+        if   r.IsEmpty 
+        then empty
+        else union (fLo r.Lo) (fHi r.Hi)
+
+    /// Standard bind operator
+    let bind1 (f: 't -> 'u Range) (r: 't Range) : 'u Range = 
+        bind f f r
 
     /// Combine an element with a Range
-    [<CompiledName("WithData")>]
     let withData (data: 'u) (rng: 't Range) : RangeData<'t, 'u> = 
         { Data = data; Range = rng }
 
     /// Cast the range to the IRange interface
-    [<CompiledName("Cast")>]
     let cast (r: 't Range) : IRange<'t> =
         r :> IRange<'t>        
 
@@ -416,20 +394,18 @@ module Range =
     /// bisect {3}  {3}     = {3},{3}
     /// bisect {0.0, 1.0} {-3.0} = {}, {0.0,1.0}
     /// bisect {}, {'a','z'} = {}
-    [<CompiledName("Bisect")>]
-    let bisect (a: 't Range) (b: 't Range) : struct ('t Range * 't Range) =
+    let bisect (a: 't Range) (b: 't Range) : ('t Range * 't Range) =
         if a.IsEmpty || b.IsEmpty then
-            struct (empty, empty)
+            (empty, empty)
         else
-            let before = a.Lo <~> b.Lo
-            let after  = b.Hi <~> a.Hi
-            struct (before, after)
+            let before = ofBounds a.Lo b.Lo
+            let after  = ofBounds b.Hi a.Hi
+            (before, after)
 
     /// Buffer the range by the given delta
     /// Buffer 5 {0} = {-5, 5}
-    [<CompiledName("Buffer")>]
     let inline buffer (delta: ^u) (r: ^t Range) : ^t Range =
-        map2
+        map
             (fun p -> p - delta)
             (fun p -> p + delta)
             r
@@ -449,32 +425,21 @@ module Range =
             Math.Abs (longRand % (max - min)) + min
 
         /// Sample a random point from the Range
-        [<CompiledName("SampleInt")>]
         let int (rng: int Range) : int =
             random.Value.Next(rng.Lo, rng.Hi)
             
         /// Sample a random point from the Range
-        [<CompiledName("SampleFloat")>]
         let float (rng: float Range) : float =
             rng.Lo + (random.Value.NextDouble() * size rng)
 
         /// Sample a random point from the Range
-        [<CompiledName("SampleDateTime")>]
         let time (rng: DateTime Range) : DateTime =
             let span : TimeSpan = size rng
             rng.Lo.AddTicks (randomLong 0L span.Ticks)
 
         /// Sample a random point from the Range
-        [<CompiledName("SampleLong")>]
         let long (rng: int64 Range) : int64 =
             randomLong rng.Lo rng.Hi
-
-    /// Combine the two ranges by cross-applying the function between all the bounds
-    /// combine (+) {1,2} {3,4} = {3, 6}
-    [<CompiledName("Combine")>]
-    let inline combine (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
-        a |> bind (fun a' -> 
-            b |> map (fun b' -> f a' b'))
 
     /// Ranges are ordered by LowerBound first then UpperBound
     let internal compare this that : int = 
@@ -493,17 +458,14 @@ module Range =
                 | _ ->
                     Compare.GT
 
-            cmp.Value                       
-
-    let inline internal add a b = combine (+) a b            
-    let inline internal sub a b = combine (-) a b            
-    let inline internal mul a b = combine (*) a b
-    let inline internal div a b = combine (/) a b
+            cmp.AsInt                       
 
     /// Returns the Haursoff Distance between the given intervals
     /// https://en.wikipedia.org/wiki/Hausdorff_distance
     [<CompiledName("Haursoff")>]
     let inline haursoff (a: ^t Range) (b: ^t Range) : ^u = 
+        let sub a b = map2 (-) a b
+        
         let delta = 
             if a > b then sub a b else sub b a
         hi delta
@@ -513,91 +475,89 @@ module Range =
 type Range<'t when 't:comparison> with
 
     static member inline (~-) (a) =
-       Range.map (~-) a
+       Range.map1 (~-) a
 
     static member inline (~+) (a) =
-       Range.map (~+) a
+       Range.map1 (~+) a
 
     static member inline (+) (a, b) =
-       Range.add a b
+       Range.map2 (+) a b
 
     static member inline (+) (a, b) =
-       Range.add a (Range.ofPoint b)
+       Range.map2 (+) a (Range.singleton b)
 
     static member inline (-) (a, b) =
-       Range.sub a b
+       Range.map2 (-) a b
 
     static member inline (-) (a, b) =
-       Range.sub a (Range.ofPoint b)
+       Range.map2 (-) a (Range.singleton b)
 
     static member inline (*) (a, b) =
-       Range.mul a b
+       Range.map2 (*) a b
 
     static member inline (*) (a, b) =
-       Range.mul a (Range.ofPoint b)
+       Range.map2 (*) a (Range.singleton b)
 
     static member inline (/) (a, b) =
-       Range.div a b
+       Range.map2 (/) a b
 
     static member inline (/) (a, b) =
-       Range.div a (Range.ofPoint b)
+       Range.map2 (/) a (Range.singleton b)
 
     static member inline (%) (a, b) =
-       Range.combine (%) a b
+       Range.map2 (%) a b
 
     static member inline (%) (a, b) =
-       Range.combine (%) a (Range.ofPoint b)
+       Range.map2 (%) a (Range.singleton b)
 
     static member inline Abs r =
-        Range.map abs r
+        Range.map1 abs r
 
-    /// Iterate over the range with the given step function
-    member this.Iterate(step: Func<'t,'t>) : 't seq =
-        let step' = FuncConvert.FromFunc step
-        Range.iterate step' this
+    static member (-?>) (a,b) = 
+        Range.relation a b
+
+    static member (<?-) (a,b) = 
+        Range.relation b a
     
     /// Map the given function to both bounds of the range
-    member this.Map(f: Func<'t,'u>) : 'u Range = 
-       let f' = FuncConvert.FromFunc f
-       Range.map f' this
+    member this.Map f =
+       Range.map1 f this
 
     /// Map the given function to the Lower Bound of the range
-    member this.MapLo(f: Func<'t,'t>) : 't Range = 
-       let f' = FuncConvert.FromFunc f
-       Range.mapLo f' this
+    member this.MapLo f =
+       Range.mapLo f this
 
     /// Map the given function to the Lower Bound of the range
-    member this.MapHi(f: Func<'t,'t>) : 't Range = 
-       let f' = FuncConvert.FromFunc f
-       Range.mapHi f' this
+    member this.MapHi f =
+       Range.mapHi f this
 
     /// Map the given functions to the bounds of the range
-    member this.Map(fLo: Func<'t,'u>, fHi: Func<'t,'u>) = 
-       Range.map2 (FuncConvert.FromFunc fLo) (FuncConvert.FromFunc fHi) this
+    member this.Map(fLo,fHi) =
+       Range.map fLo fHi this
     
     /// Bind the given functions to the bounds of the range
-    member this.Bind(fLo: Func<'t,'u Range>, fHi: Func<'t,'u Range>) = 
-       Range.bind2 (FuncConvert.FromFunc fLo) (FuncConvert.FromFunc fHi) this
+    member this.Bind(fLo,fHi) = 
+       Range.bind fLo fHi this
     
     /// Bind the given functions to the bounds of the range
-    member this.Bind(f: Func<'t,'u Range>) = 
-       Range.bind (FuncConvert.FromFunc f) this
+    member this.Bind f =
+       Range.bind1 f this
     
     /// Returns the union of the range with the given point
-    member this.Union(point: 't) : 't Range = 
-       Range.union this (Range.ofPoint point)
+    member this.Union point =
+       Range.union this (Range.singleton point)
     
     /// Returns the union of the two ranges
-    member this.Union(that: 't Range) : 't Range = 
+    member this.Union that = 
        Range.union this that
-    
+   
     /// Bisect the Range at the given point
-    member this.Bisect(that: 't Range) : struct('t Range * 't Range) =
+    member this.Bisect(point) =
+       Range.bisect this (Range.singleton point)    
+
+    /// Bisect the Range at the given point
+    member this.Bisect(that) =
        Range.bisect this that
-    
-    /// Bisect the Range at the given point
-     member this.Bisect(point:'t) : struct('t Range * 't Range) =
-        Range.bisect this (Range.ofPoint point)    
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
     member this.Relation(that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
@@ -607,8 +567,8 @@ type Range<'t when 't:comparison> with
             Range.relation this that
 
     /// Returns the Relation from a -> b, or from b -> a if inverse is true
-    member this.Relation(b: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
-        this.Relation(Range.ofPoint b, inverse)
+    member this.Relation(that: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : Relation = 
+        this.Relation(Range.singleton that, inverse)
     
     /// Check if the relationship holds between the two ranges
     member this.HasRelation(relation:Relation, that: 't Range, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
@@ -616,18 +576,18 @@ type Range<'t when 't:comparison> with
     
     /// Check if the relationship holds between the two ranges
     member this.HasRelation(relation:Relation, point: 't, [<Optional;DefaultParameterValue(false)>]inverse:bool) : bool =
-       this.HasRelation(relation, Range.ofPoint point)
+       this.HasRelation(relation, Range.singleton point)
     
     /// Returns true if the given range does not exceed the bound of this range
-    member this.Contains(that: 't Range) : bool =
+    member this.Contains that =
        Range.contains this that
     
     /// Returns true if the point does not exceed the bounds of this range
-    member this.Contains(point: 't) : bool =
-       Range.contains this (Range.ofPoint point)
+    member this.Contains point =
+       Range.contains this (Range.singleton point)
     
     /// Returns true if this range does not exeed the bounds of the given range
-    member this.Within(that: 't Range) : bool =
+    member this.Within that =
        Range.within this that
 
     /// Cast to the IRange interface
@@ -651,19 +611,19 @@ type Extensions =
     [<Extension>]    
     /// Create a Range of the single point
      static member ToRange (point: 't) : 't Range =  
-        Range.ofPoint point
+        Range.singleton point
         
     [<Extension>]    
     /// Create a Range between the given points
      static member ToRange (a: 't, b: 't, [<Optional;DefaultParameterValue(false)>] forceOrder:bool) : 't Range =  
         if forceOrder 
-        then Range.ofOrdered a b
-        else Range.ofBounds a b
+        then Range.ofBounds a b
+        else Range.of2 a b
 
     [<Extension>]    
     /// Create a Range between the given points
      static member ToRange (struct(a: 't, b: 't)) : 't Range =  
-        Range.ofBounds a b
+        Range.of2 a b
 
     [<Extension>]
     /// Sample a random point from the range
@@ -694,3 +654,9 @@ type Extensions =
     /// Buffer the range by the given delta
     static member inline Buffer(this, delta:^u) : ^t Range =
         Range.buffer delta this
+
+    [<Extension>]
+    /// Buffer the range by the given delta
+    static member inline Iterate(this, step:^u) : ^u seq =
+        Range.iterate step this
+
