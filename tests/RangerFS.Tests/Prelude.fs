@@ -83,6 +83,9 @@ module Prelude =
     /// A range and a point within it
     type RangeAndPoint<'t when 't:comparison> =
         { Range: 't Range; Point: 't}
+
+    type Disjuctive<'t when 't:comparison> =
+        { A: 't Range; B: 't Range}
     
     type Generators =
 
@@ -111,7 +114,13 @@ module Prelude =
             |> Gen.map Range.ofSeq
             |> Arb.fromGen
 
-        static member inline NonEmptyRange< ^u when ^u:comparison>() =
+        static member inline Disjunctive< ^u when ^u:comparison>() =
+            Arb.generate< ^u Range * ^u Range>
+            |> Gen.filter (fun (a,b) -> not (Range.intersects a b))
+            |> Gen.map (fun (a,b) -> {A=a; B=b})
+            |> Arb.fromGen
+
+        static member inline NonOverlapping< ^u when ^u:comparison>() =
             Arb.generate< ^u>
             |> Gen.filter nonNull
             |> Gen.listOfLength 3
@@ -119,6 +128,7 @@ module Prelude =
             |> Gen.filter (Range.isEmpty >> not)
             |> Gen.map (fun r -> {Range=r})
             |> Arb.fromGen
+
 
     let testPropertyWithConfig config name test =
         testPropertyWithConfig
