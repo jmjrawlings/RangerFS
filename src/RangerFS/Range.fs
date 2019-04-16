@@ -7,70 +7,6 @@ open System.Runtime.InteropServices
 
 #nowarn "0342"
 
-/// Thrown if certain operations are performed on the Empty Range
-exception EmptyRangeException  
-
-/// For safe exposure outside F#
-type IRange<'t when 't:comparison> = 
-    abstract IsEmpty : bool
-    abstract Lo: 't
-    abstract Hi: 't
-
-[<Struct>]
-[<CustomComparison>]
-[<StructuralEquality>]
-/// A Range representing the values between a Lower and Upper Bound
-type Range<'t when 't : comparison> = 
-    private
-    | Empty_
-    | Singleton_ of 't
-    | Bounds_ of lo:'t * hi: 't    
-
-    /// The lower bound of the Range
-    member this.Lo : 't = Range.lo this
-
-    /// The upper bound of the Range
-    member this.Hi : 't = Range.hi this
-
-    /// Returns true if the given range is the Empty Range
-    member this.IsEmpty = Range.isEmpty this
-
-    /// Returns true if the Range contains a single value
-    member this.IsSingleton = Range.isSingleton this
-
-    override this.ToString() =
-        match this with 
-        | Empty_         -> "{}"
-        | Singleton_ p       -> sprintf "{%O}" p
-        | Bounds_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
-
-    interface IComparable with
-        member this.CompareTo(that) =
-            match that with
-            | :? Range<'t> as r -> 
-                Range.compare this r
-            | _ ->
-                failwith "Object was not a Range"                
-
-    interface IComparable<'t Range> with
-        member this.CompareTo(that) = 
-            Range.compare this that
-
-    interface IRange<'t> with
-        member this.Lo = this.Lo
-        member this.Hi = this.Hi
-        member this.IsEmpty = this.IsEmpty
-                    
-// Range and associated Data
-type RangeData<'bound,'data when 'bound:comparison> = 
-    { Data  : 'data
-      Range : 'bound Range }
-
-    interface IRange<'bound> with
-        member __.Lo = __.Range.Lo
-        member __.Hi = __.Range.Hi
-        member __.IsEmpty = __.Range.IsEmpty
-
 /// Allen's Interval Algebra relation table
 /// https://en.wikipedia.org/wiki/Allen%27s_interval_algebra#Composition_of_relations_between_intervals
 type Relation = 
@@ -129,39 +65,85 @@ type Relation =
     /// Y: -------
     | Equal = 13
 
-module Operators = 
-    let (<=>) a b = Range.ofBounds a b
-    let (<~>) a b = Range.of2 a b
-    let (!) p     = Range.singleton p
+[<Struct>]
+[<CustomComparison>]
+[<StructuralEquality>]
+/// A Range representing the values between a Lower and Upper Bound
+type Range<'t when 't : comparison> = 
+    private
+    | Empty_
+    | Singleton_ of 't
+    | Bounds_ of lo:'t * hi: 't    
 
-/// Helper functions for comparisons
-module private Compare = 
-    
+    /// The lower bound of the Range
+    member this.Lo : 't = Range.lo this
+
+    /// The upper bound of the Range
+    member this.Hi : 't = Range.hi this
+
+    /// Returns true if the given range is the Empty Range
+    member this.IsEmpty = Range.isEmpty this
+
+    /// Returns true if the Range contains a single value
+    member this.IsSingleton = Range.isSingleton this
+
+    override this.ToString() =
+        match this with 
+        | Empty_         -> "{}"
+        | Singleton_ p       -> sprintf "{%O}" p
+        | Bounds_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
+
+    interface IComparable with
+        member this.CompareTo(that) =
+            match that with
+            | :? Range<'t> as r -> 
+                Range.compare this r
+            | _ ->
+                failwith "Object was not a Range"                
+
+    interface IComparable<'t Range> with
+        member this.CompareTo(that) = 
+            Range.compare this that
+
+    interface IRange<'t> with
+        member this.Range = this
+
+and IRange<'t when 't:comparison> = 
+    abstract Range : 't Range
+                    
+// Range and associated Data
+type RangeData<'bound,'data when 'bound:comparison> = 
+    { Data  : 'data
+      Range : 'bound Range }
+
+    interface IRange<'bound> with
+        member __.Range = __.Range
+
+/// Thrown if certain operations are performed on the Empty Range
+exception EmptyRangeException  
+
+[<RequireQualifiedAccess>]
+module Range = 
+
     [<Struct>]
-    type Comparison =
+    type private Comparison =
         | LT | GT | EQ 
         member this.AsInt = 
             match this with
             | LT -> -1
             | GT -> 1
             | EQ -> 0
-        
-    let inline max a b =
+    
+    let inline private max a b =
         if a > b then a else b
 
-    let inline min a b =
+    let inline private min a b =
         if a < b then a else b
 
-    let inline cmp a b : Comparison = 
+    let inline private cmp a b : Comparison = 
         if      a < b then LT
         else if a > b then GT
         else    EQ
-
-
-[<RequireQualifiedAccess>]    
-module Range = 
-
-    open Compare
 
     /// Return the low value of the Range 
     let lo (r: 't Range) : 't =
@@ -178,7 +160,7 @@ module Range =
         | Empty_ -> raise EmptyRangeException
 
     /// Return the size of the Range
-    let inline size (r: ^t Range) : ^u =
+    let inline size (r: 't Range) : 'u =
         r.Hi - r.Lo
 
     /// Returns true if the given range is Empty
@@ -199,7 +181,7 @@ module Range =
         Singleton_ p
 
     /// Construct a Range that is non empty only if lo <= hi
-    let internal ofBounds (lo: 't) (hi: 't) : 't Range =        
+    let ofBounds (lo: 't) (hi: 't) : 't Range =        
         match cmp lo hi with
         | LT -> Bounds_ (lo, hi)
         | EQ -> Singleton_ lo
@@ -213,18 +195,30 @@ module Range =
         | GT -> Bounds_ (b, a)
 
     /// Construct a Range from the given Tuple
-    let ofTuple (a,b) = 
+    let ofTuple (a:'t, b:'t) : 't Range = 
         ofBounds a b
 
     /// ofSymmetric 3 = {-3..3}
-    let inline ofSymmetric p =
+    let inline ofSymmetric (p: 't) : 't Range =
         of2 p -p
 
     /// Construct a Range with a single bound and a size
-    let inline ofSize (delta: ^d) (p: ^t)  : ^t Range = 
-        of2 p (p + delta)
+    let inline ofSize (delta: 'd) (point: 't)  : ^t Range = 
+        of2 point (point + delta)
 
-    /// Construct a Range from a sequence of comparable items
+    /// Returns the union of two Ranges
+    let union (a: 't Range) (b: 't Range) : 't Range =
+        if      a.IsEmpty then b
+        else if b.IsEmpty then a
+        else 
+            let lo = min a.Lo b.Lo
+            let hi = max a.Hi b.Hi
+            of2 lo hi
+
+    /// Returns the union of many ranges
+    let unionMany (ranges: 't Range seq) : 't Range = 
+        Seq.fold union empty ranges
+
     let ofSeq(xs: #seq<'t>) : 't Range =
         xs 
         |> Seq.map singleton
@@ -241,6 +235,9 @@ module Range =
         |> toList
         |> Seq.ofList
 
+    let toOption (r: 't Range): ('t * 't) option =
+        if r.IsEmpty then None
+        else Some (r.Lo, r.Hi)
 
     /// Returns the Zero range
     let inline zero () = 
@@ -275,20 +272,6 @@ module Range =
             | GT, GT when a.Lo < b.Hi -> Relation.OverlapsEnd
             | GT, GT -> Relation.After 
 
-    /// Returns the union of two Ranges
-    [<CompiledName("Union")>]
-    let union (a: 't Range) (b: 't Range) : 't Range =
-        if      a.IsEmpty then b
-        else if b.IsEmpty then a
-        else 
-            let lo = min a.Lo b.Lo
-            let hi = max a.Hi b.Hi
-            of2 lo hi
-
-    /// Returns the union of many ranges
-    [<CompiledName("UnionMany")>]
-    let unionMany (ranges: 't Range seq) : 't Range = 
-        Seq.fold union empty ranges
 
     /// Returns the intersection of the given ranges
     let intersection (a: 't Range) (b: 't Range) : 't Range = 
@@ -324,7 +307,7 @@ module Range =
         not (intersects a b)
 
     /// Iterate over the Range with the given step function
-    let inline iterate step (r: 't Range) : 't seq =
+    let inline iterate (step: ^step) (r: 't Range) : 't seq =
         if r.IsEmpty then Seq.empty else 
         let lo = r.Lo
         let hi = r.Hi
@@ -333,7 +316,7 @@ module Range =
               yield x
               x <- (x + step) }
 
-    /// Iterate with a step of (range.Size / n)
+    /// Partition the range into 'n' peices
     /// partition 4 {0..6.0} = [{0..1.5};{1.5..3.0};{3.0..4.5};{4.5..6.0}]
     let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
         if r.IsEmpty then Seq.empty else
@@ -446,26 +429,21 @@ module Range =
         if      this.IsEmpty  then -1
         else if that.IsEmpty  then 1
         else 
-            let lo = Compare.cmp this.Lo that.Lo
-            let hi = Compare.cmp this.Hi that.Hi
+            let lo = cmp this.Lo that.Lo
+            let hi = cmp this.Hi that.Hi
             let cmp = 
                 match (lo, hi) with
-                | Compare.LT, _  
-                | Compare.EQ, Compare.LT ->
-                    Compare.LT
-                | Compare.EQ, Compare.EQ -> 
-                    Compare.EQ
-                | _ ->
-                    Compare.GT
+                | LT, _  
+                | EQ, LT -> LT
+                | EQ, EQ -> EQ
+                | _ ->      GT
 
             cmp.AsInt                       
 
     /// Returns the Haursoff Distance between the given intervals
     /// https://en.wikipedia.org/wiki/Hausdorff_distance
-    [<CompiledName("Haursoff")>]
     let inline haursoff (a: ^t Range) (b: ^t Range) : ^u = 
-        let sub a b = map2 (-) a b
-        
+        let sub a b = map2 (-) a b       
         let delta = 
             if a > b then sub a b else sub b a
         hi delta
@@ -593,6 +571,13 @@ type Range<'t when 't:comparison> with
     /// Cast to the IRange interface
     member this.Cast() : IRange<'t> =
         Range.cast this
+
+
+module Operators = 
+    let (<=>) a b = Range.ofBounds a b
+    let (<~>) a b = Range.of2 a b
+    let (!) p     = Range.singleton p
+    let inline (=+>) a b  = Range.ofSize b a
        
 
 [<Extension>]
