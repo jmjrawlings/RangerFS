@@ -131,8 +131,14 @@ module LogicTests =
                 <| fun (a: 't Range, b: 't Range) ->
                     let (before,after) = Range.bisect a b
                     before.Within(a) && after.Within(a)
-        ]
 
+            testProp "tryMap catches"
+                <| fun (a: 't Range) ->
+                    let trial x = failwith "exception"
+                    a
+                    |> Range.tryMap trial trial
+                    |> Range.isEmpty
+        ]
 
     [<Tests>]
     let tests= 
@@ -193,32 +199,30 @@ module RelationTests =
             Expect.equal actual expected (sprintf "relation test %O vs %O" x y)
 
     let inverseTest : Test = 
-        
+
+        let inverseRelations = 
+            [
+             Relation.Starts, Relation.StartedBy 
+             Relation.Finishes, Relation.FinishedBy
+             Relation.Before, Relation.After
+             Relation.Empty, Relation.Empty 
+             Relation.MeetsStart, Relation.MeetsEnd
+             Relation.Within, Relation.Contains
+             Relation.OverlapsStart, Relation.OverlapsEnd
+            ]
+            |> Set.ofSeq
+
         let inline test (a: int Range) (b: int Range) =
             let fwd = Range.relation a b
             let rev = Range.relation b a
-
-            match (fwd, rev) with
-            
-            | Relation.Starts, Relation.StartedBy 
-            | Relation.Finishes, Relation.FinishedBy
-            | Relation.Empty, Relation.Empty 
-            | Relation.StartedBy, Relation.Starts
-            | Relation.FinishedBy, Relation.Finishes -> true
-
-            | Relation.Starts, _
-            | Relation.StartedBy, _
-            | Relation.FinishedBy, _
-            | Relation.Finishes, _
-            | Relation.Empty, _ -> false
-
-            | _ -> true
+            inverseRelations.Contains (fwd, rev)
+            ||
+            inverseRelations.Contains (rev, fwd)
 
         testProp "inverse" test
-
     
 
-    let equalTest : Test =
+    let equalityTest : Test =
         testProp "equals" <| fun (r : int Range) ->
             (Range.relation r r) = Relation.Equal
 
@@ -226,7 +230,7 @@ module RelationTests =
     [<Tests>]
     let tests = 
         testList "relations" [
-            equalTest
+            equalityTest
 
             inverseTest
 
