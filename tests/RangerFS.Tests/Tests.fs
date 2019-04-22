@@ -129,7 +129,7 @@ module LogicTests =
 
             testProp "bisecting is clamped"
                 <| fun (a: 't Range, b: 't Range) ->
-                    let (before,after) = a.Bisect(b)
+                    let (before,after) = Range.bisect a b
                     before.Within(a) && after.Within(a)
         ]
 

@@ -6,6 +6,7 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
 #nowarn "0342"
+#nowarn "86"
 
 /// Allen's Interval Algebra relation table
 /// https://en.wikipedia.org/wiki/Allen%27s_interval_algebra#Composition_of_relations_between_intervals
@@ -13,56 +14,91 @@ type Relation =
     /// One or both the ranges are empty
     | Empty = 0
 
-    /// X: ---
-    /// Y:     ---
+    /// <summary>
+    /// X is entirely before Y
+    /// <para>oxxooooo</para>
+    /// <para>ooooxxxx</para>
+    /// </summary>
     | Before = 1 
 
-    /// X:     ---
-    /// Y: ---
+    /// <summary>
+    /// X is entirely after Y
+    /// <para>ooooxxxx</para>
+    /// <para>oxxooooo</para>
+    /// </summary>
     | After = 2
 
-    /// X: ---
-    /// Y: -------
+    /// <summary>
+    /// X starts Y
+    /// <para>oxxooooo</para>
+    /// <para>oxxxxxxo</para>
+    /// </summary>
     | Starts = 3 
 
-    /// X: -------
-    /// Y: ---
+    /// <summary>
+    /// X is started by Y
+    /// <para>oxxxxxxo</para>
+    /// <para>oxxooooo</para>
+    /// </summary>
     | StartedBy = 4
     
-    /// X:     ---
-    /// Y: -------
+    /// <summary>
+    /// X finishes Y
+    /// <para>ooooooxx</para>
+    /// <para>oooxxxxx</para>
+    /// </summary>
     | Finishes = 5
 
-    /// X: -------
-    /// Y:     ---
+    /// <summary>
+    /// X is finished by Y
+    /// <para>oooxxxxx</para>
+    /// <para>ooooooxx</para>
+    /// </summary>
     | FinishedBy = 6
 
-    /// X: ---
-    /// Y:    ----
+    /// <summary>
+    /// X ends where Y starts
+    /// <para>oxxxooo</para>
+    /// <para>oooxxxo</para>
+    /// </summary>
     | MeetsStart = 7
 
-    /// X:    ----
-    /// Y: ---
+    /// <summary>
+    /// X starts where Y ends
+    /// <para>oooxxxo</para>
+    /// <para>oxxxooo</para>
+    /// </summary>
     | MeetsEnd = 8
 
-    /// X: -----
-    /// Y:    ----
+    /// <summary>
+    /// End of X overlaps start of Y
+    /// <para>xxxxxooo</para>
+    /// <para>ooxxxxxx</para>
+    /// </summary>
     | OverlapsStart = 9
 
-    /// X:    -----
-    /// Y: -----
+    /// <summary>
+    /// Start of X overlaps end of Y
+    /// <para>ooxxxxxx</para>
+    /// <para>xxxxxooo</para>
+    /// </summary>
     | OverlapsEnd = 10
 
-    /// X:  ---
-    /// Y: -------
+    /// <summary>
+    /// X is entirely within Y
+    /// <para>ooxxxooo</para>
+    /// <para>xxxxxxxx</para>
+    /// </summary>
     | Within = 11
 
-    /// X: -------
-    /// Y:   ---
+    /// <summary>
+    /// Y is entirely within X
+    /// <para>xxxxxxxx</para>
+    /// <para>ooxxxooo</para>
+    /// </summary>
     | Contains = 12
 
-    /// X: -------
-    /// Y: -------
+    /// X = Y
     | Equal = 13
 
 [<Struct>]
@@ -95,7 +131,7 @@ type Range<'t when 't : comparison> =
         match this with 
         | Empty_          -> "{}"
         | Singleton_ p    -> sprintf "{%O}" p
-        | Bounds_ (lo,hi) -> sprintf "{%O .. %O}" lo hi
+        | Bounds_ (lo,hi) -> sprintf "{%O..%O}" lo hi
 
     interface IComparable with
         member this.CompareTo(that) =
@@ -114,30 +150,16 @@ type Range<'t when 't : comparison> =
 
 and IRange<'t when 't:comparison> = 
     abstract Range : 't Range
-                    
-// Range and associated Data
-type RangeData<'bound,'data when 'bound:comparison> = 
-    { Data  : 'data
-      Range : 'bound Range }
-
-    interface IRange<'bound> with
-        member __.Range = __.Range
 
 /// Thrown if certain operations are performed on the Empty Range
 exception EmptyRangeException  
 
 [<RequireQualifiedAccess>]
 module Range = 
-
+    
     [<Struct>]
     type private Comparison =
         | LT | GT | EQ 
-            
-    let inline private max a b =
-        if a > b then a else b
-
-    let inline private min a b =
-        if a < b then a else b
 
     let inline private cmp a b : Comparison = 
         if      a < b then LT
@@ -166,7 +188,7 @@ module Range =
     let isEmpty (r: 't Range) : bool = 
         r = Empty_
 
-    /// Returns true if the bounds are equals
+    /// Returns true if range.Lo = range.Hi
     let isSingleton (r: 't Range) : bool = 
         match r with
         | Singleton_ _ -> true 
@@ -179,14 +201,14 @@ module Range =
     let singleton (p: 't) : 't Range =
         Singleton_ p
 
-    /// Construct a Range that is non empty only if lo <= hi
+    /// Construct a non-empty Range if lo <= hi
     let ofBounds (lo: 't) (hi: 't) : 't Range =        
         match cmp lo hi with
         | LT -> Bounds_ (lo, hi)
         | EQ -> Singleton_ lo
         | GT -> Empty_
 
-    /// Construct a Range that spans the given bounds
+    /// Construct a Range that spans the given points
     let of2 (a: 't) (b: 't) : 't Range =
         match cmp a b with
         | LT -> Bounds_ (a, b)
@@ -283,11 +305,11 @@ module Range =
     /// Returns true if b does not exceed the bounds of a
     let contains (a: 't Range) (b: 't Range) : bool =
         match relation a b with
-        | Relation.Before 
-        | Relation.After 
-        | Relation.MeetsStart
-        | Relation.MeetsEnd -> false
-        | Relation.Empty -> a.IsEmpty
+        | Relation.StartedBy
+        | Relation.FinishedBy
+        | Relation.Contains
+        | Relation.Equal -> true
+        | Relation.Empty -> b.IsEmpty
         | _ -> true
 
     /// Returns true if a does not exceed the bounds of b
@@ -305,7 +327,7 @@ module Range =
     let disjoint (a: 't Range) (b: 't Range) : bool =
         not (intersects a b)
 
-    /// Iterate over the Range with the given step function
+    /// Iterate over the Range with the given step 
     let inline iterate (step: ^step) (r: 't Range) : 't seq =
         if r.IsEmpty then Seq.empty else 
         let lo = r.Lo
@@ -315,8 +337,10 @@ module Range =
               yield x
               x <- (x + step) }
 
+    /// <summary>
     /// Partition the range into 'n' peices
-    /// partition 4 {0..6.0} = [{0..1.5};{1.5..3.0};{3.0..4.5};{4.5..6.0}]
+    /// <para>partition 3 {0..6.0} = [{0..2.0}; {2.0..4.0}; {4.0..6.0}]</para>
+    /// <summary>
     let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
         if r.IsEmpty then Seq.empty else
 
@@ -326,9 +350,9 @@ module Range =
         r
         |> iterate delta
         |> Seq.pairwise
-        |> Seq.map (fun (a,b) -> of2 a b)
+        |> Seq.map ofTuple
 
-    /// Apply the given function to the lower and upper bounds of the Range
+    /// Apply the given functions to the bounds of the Range
     let map (fLo: 't -> 'u) (fHi: 't -> 'u) (r: 't Range) : 'u Range =
         if r.IsEmpty
         then empty
@@ -343,9 +367,13 @@ module Range =
         map id f r
 
     /// Apply the given function to the Range
-    let map1 f r = map f f r
+    let map1 (f: 't -> 'u) (r: 't Range) : 'u Range = 
+        map f f r
 
-    /// Combine two ranges with the given function
+    /// <summary>
+    /// Returns the union of cross-applying f to the given ranges
+    /// <para>map2 f a b = union [f a.Lo b.Lo; f a.Lo b.Hi; f a.Hi b.Lo; f a.Hi b.Hi]<para>
+    /// <summary>
     let map2 (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
         a |> bind1 (fun a' -> 
             b |> map1 (fun b' ->
@@ -361,30 +389,21 @@ module Range =
     let tryMap2 (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
         try (map2 f a b) with | _ -> empty
 
-    /// Standard bind operator
     let bind (fLo: 't -> 'u Range) (fHi: 't -> 'u Range) (r: 't Range) : 'u Range =
         if   r.IsEmpty 
         then empty
         else union (fLo r.Lo) (fHi r.Hi)
 
-    /// Standard bind operator
     let bind1 (f: 't -> 'u Range) (r: 't Range) : 'u Range = 
         bind f f r
 
-    /// Combine an element with a Range
-    let withData (data: 'u) (rng: 't Range) : RangeData<'t, 'u> = 
-        { Data = data; Range = rng }
-
-    /// Cast the range to the IRange interface
-    let cast (r: 't Range) : IRange<'t> =
-        r :> IRange<'t>        
-
+    /// <summary>
     /// Bisect the range returning the range before and after the given point
-    /// bisect {0,10} {5}   = {0,5}, {5,10}
-    /// bisect {0,10} {2,4} = {0,2}, {4,10}
-    /// bisect {3}  {3}     = {3},{3}
-    /// bisect {0.0, 1.0} {-3.0} = {}, {0.0,1.0}
-    /// bisect {}, {'a','z'} = {}
+    /// <para>bisect {0..10} {5} = {0..5}, {5..10}</para>
+    /// <para>bisect {0..10} {2..4} = {0..2}, {4..10}</para>
+    /// <para>bisect {3} {3} = {3},{3}</para>
+    /// <para>bisect {0..10} {-3} = {}, {0..10}</para>
+    /// </summary>
     let bisect (a: 't Range) (b: 't Range) : ('t Range * 't Range) =
         if a.IsEmpty || b.IsEmpty then (empty,empty) else 
 
@@ -396,18 +415,22 @@ module Range =
 
         (before, after)
 
+    /// <summary>
     /// Buffer the range by the given delta
-    /// Buffer 5 {0} = {-5, 5}
+    /// <para>buffer 5 {10..12} = {5..17}</para>
+    /// </summary>
     let inline buffer (delta: ^u) (r: ^t Range) : ^t Range =
         map
             (fun p -> p - delta)
             (fun p -> p + delta)
             r
 
-    /// Clamp the second range such that it does not exceed the first
-    /// Clamp {0 .. 10} 4 = 4
-    /// Clamp {0 .. 10} 12 = 10
-    /// Clamp {0 .. 10} -100 = 0
+    /// <summary>
+    /// Clamp the given point such to the range
+    /// <para>Clamp {0..10} 4 = 4</para>
+    /// <para>Clamp {0..10} 12 = 10</para>
+    /// <para>Clamp {0..10} -100 = 0</para>
+    /// <summary>
     let clampPoint (a: 't Range) (point: 't) : 't =
         match a with
         | _ when a.IsEmpty -> raise EmptyRangeException
@@ -416,9 +439,11 @@ module Range =
         | Bounds_ (_, hi) when point > hi -> hi
         | _ -> point
 
+    /// <summary>
     /// Clamp the second range such that it does not exceed the first
-    /// Clamp {0 .. 10} {8 .. 12} = {8 .. 10}
-    /// Clamp {-1.5 .. -0.02} {0.5} = {-0.02}
+    /// <para>Clamp {0..10} {8..12} = {8..10}</para>
+    /// <para>Clamp {-1.5..-0.02} {0.5} = {-0.02}</para>
+    /// </summary>
     let clamp (a: 't Range) (b: 't Range) : 't Range =
         if a.IsEmpty then empty else
         if b.IsEmpty then singleton a.Lo else
