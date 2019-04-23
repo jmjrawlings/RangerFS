@@ -435,7 +435,7 @@ module Range =
     /// <para>Clamp {0..10} 12 = 10</para>
     /// <para>Clamp {0..10} -100 = 0</para>
     /// <summary>
-    let clampPoint (a: 't Range) (point: 't) : 't =
+    let clampPoint (point: 't) (a: 't Range) : 't =
         match a with
         | _ when a.IsEmpty -> raise EmptyRangeException
         | Singleton_ x -> x
@@ -451,8 +451,8 @@ module Range =
     let clamp (a: 't Range) (b: 't Range) : 't Range =
         if a.IsEmpty then empty else
         if b.IsEmpty then singleton a.Lo else
-        let lo = clampPoint a b.Lo
-        let hi = clampPoint a b.Hi
+        let lo = clampPoint b.Lo a
+        let hi = clampPoint b.Hi a
         ofBounds lo hi
 
     [<RequireQualifiedAccess>]
@@ -652,7 +652,7 @@ type Range<'t when 't:comparison> with
 
     /// Clamp the give point to this range
     member this.Clamp that =
-        Range.clampPoint this that
+        Range.clampPoint that this
 
 
 
