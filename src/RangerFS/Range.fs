@@ -623,9 +623,9 @@ module Operators =
 type Extensions =
 
     [<Extension>]
-    /// Returns the Range between (a) and (a + offset)
-     static member inline ToRangeOffset(a: ^t, offset: ^u) : ^t Range = 
-        Range.ofSize offset a
+    /// Returns the Range of the given size
+     static member inline ToRangeOfSize(a: ^t, size: ^u) : ^t Range = 
+        Range.ofSize size a
 
     [<Extension>]    
     /// Returns a Range representing to bounds of the sequence

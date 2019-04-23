@@ -4,10 +4,10 @@
 #I "../../src/RangerFS"
 
 (**
-RangerFS in 5 minutes
+Tutorial
 ========================
 
-Firstly reference `Range.fs` and open the `Ranger` namespace.
+Firstly reference Range.fs and open the Ranger namespace.
 
 *)
 #load "Range.fs"
@@ -15,10 +15,10 @@ open System
 open Ranger
 open Ranger.Operators
 
-(* 
+(**
 A `Range<'t>` represents the (possibly empty) interval between a Lower Bound and an Upper Bound.
 The available constructors ensure that the invariant of range.Lo <= range.Hi always holds.
-**)
+*)
 let r = (0 <=> 100) // {0..100}
 r.Lo // 0
 r.Hi // 100
@@ -26,46 +26,47 @@ r.Hi // 100
 (**
 # Constructing Ranges
 
-The primary constructor of `Range` is `Range.ofBounds` or its equivalent operator `<=>` which takes a lower and
-upper bound and returns the `Range`.  
+The primary constructor of for ranges is `Range.ofBounds` or its equivalent operator `<=>` which takes a lower and
+upper bound.  
 *)
 Range.ofBounds 0 10 // {0..10}
 Range.ofBounds 4.0 4.5 // {4.0..4.5}
 10 <=> 20 // {10..20}
 
 (**
-Note that `Range.ofBounds` will return `Empty` if the lower bound is greater than the upper bound
+Note that `Range.ofBounds` will return `Range.empty` if the lower bound is greater than the upper bound
 *)
 Range.ofBounds 100 0 = Range.empty // true
+(Range.ofBounds 100 0).IsEmpty // true
 
 (**
 Use `Range.of2` or its equivalent operator `<~>` for order agnostic creation
 *)
 Range.of2 10 0 // {0..10}
-Range.ofTuple (4, 2) // {2..4}
+Range.of2 0 10 // {0..10}
 100 <~> 0 // {0..100}
 
 (** 
-The special case where `range.Lo = range.Hi` is referred to as a `Singleton` and can be constructed by
+The special case where the lower bound equals the upper bound is referred to as a singleton and can be constructed by
 `Range.singleton` or its equivalent operator `!` *)
 Range.singleton 2.5 // {2.5}
 !2.5 // {2.5}
 Range.ofBounds 2.5 2.5 // {2.5}
 
-(** We can also construct a `Range` from a sequence of points with `Range.ofSeq` *)
+(** We can also construct a range from a sequence of points with `Range.ofSeq` *)
 Range.ofSeq [ 7; 5; -2; -100; 50; 75] // {-2..100}
 Range.ofSeq [ 'a'; 'b'; 'q'; 'z'; 'h'; 'j'] // {'a'..'z'}
 
 (** 
-Constructing a `Range` from an empty list results in the Empty Range. 
+Constructing a range from an empty list results in the Empty range. 
 Also available through `Range.empty`, the empty range is a natural way to represent the results
 of invalid operations such as the intersection of non-overlapping `Ranges`
 *)
 let r : int Range = Range.ofSeq [] // {}
 Range.isEmpty Range.empty // true
 
-(** It is often more convenient to construct a `Range` using a single bound and a size - 
-this can be done with `Range.ofSize` or the equivalent operator =+> *)
+(** It is often more convenient to construct a range using a single bound and a size - 
+this can be done with `Range.ofSize` or the equivalent operator `=+>` *)
 
 0.1 |> Range.ofSize 0.5 // {0.1 .. 0.6}
 15 |> Range.ofSize 10 // {15..25}
@@ -76,6 +77,7 @@ let aFortnight = DateTime(2019,1,1) =+> (TimeSpan.FromDays 7.)
 Range.size aFortnight // 7 days
 
 (** Several extension methods are included to assist in creation *)
+
 (1).ToRange(100) // {1..100}
 DateTime(1900,1,1).ToRangeOfSize(TimeSpan.FromDays 7.) // {1/1/1900..8/1/1900}
 (4.5).ToRange() // {4.5}
@@ -84,8 +86,8 @@ DateTime(1900,1,1).ToRangeOfSize(TimeSpan.FromDays 7.) // {1/1/1900..8/1/1900}
 (**
 # Relations 
 
-The primary method of comparing ranges is `Range.relation` which returns a `Relation`.  The members of `Range.Relation`.
-`Range.relation` represent an exhaustive enumeration of the possible ways in which two ranges may be related.
+The primary method of comparing ranges is `Range.relation` which returns a Relation.  The members of `Range.relation` 
+represent an exhaustive enumeration of the possible ways in which two ranges may be related.
 
 You can read more at [Allen's Interval Algebra](https://en.wikipedia.org/wiki/Allen%27s_interval_algebra
 *)
@@ -106,7 +108,7 @@ Range.relation (0 <=> 5) Range.empty // Relation.Empty
 
 (**
 Relations may also be constructed and examined through `range.Relation(other)` and `range.HasRelation(relation, other)`.
-These methods are overloaded for so you may compare against `Range<'t>` or just a point of `t`.
+These methods are overloaded for so you may compare against a range or just a point.
 *)
 
 (0 <=> 10).Relation(11) // Relation.Before
@@ -117,7 +119,7 @@ These methods are overloaded for so you may compare against `Range<'t>` or just 
 (**
 # Set-Theoretic Operations
 
-As a `Range` is an abstract view of a set of elements a lot of the operations on sets hold.
+As a range is an abstract view of a set of elements a lot of the operations on sets hold.
 The most basic operation is `Range.union` which constructs a new range that convers both of the 
 input ranges
 *)
@@ -161,7 +163,7 @@ Range.bisect (!10) (!10) // ({10},{10})
 (**
 # Transformation
 
-`Ranger` provides implementations of `map` and `bind` to allow easy transformation.  Note that
+Implementations of `map` and `bind` are provided to allow easy transformation.  Note that
 these function take 2 arguments for the lower and upper bounds respectively.
 
 *)
@@ -178,7 +180,14 @@ To map the same function for both ends use `Range.map1`
 (5 <=> 10) |> Range.map1 (fun x -> x * 10) // {500..1000}
 
 (**
-As a `Range<'t>` is generic we can go happily transform between types
+Or for one end only
+*)
+
+(4.5 <=> 5.5) |> Range.mapLo (fun x -> x - 4.0) //{0.5..5.5}
+(4.5 <=> 5.5) |> Range.mapHi (fun x -> x - 0.5) //{0.5..5.0}
+
+(**
+As `Range<'t>` is generic we can go happily transform between types
 *)
 
 0
@@ -192,7 +201,7 @@ As a `Range<'t>` is generic we can go happily transform between types
 (**
 # Algebra 
 
-`RangerFS` supports [arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) for all major operators.
+[Interval Arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) is supported for all major operators.
 Binary operators are applied as:
 
 ```
