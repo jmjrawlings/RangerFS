@@ -264,6 +264,10 @@ module Range =
     let inline zero () = 
         singleton LanguagePrimitives.GenericZero
 
+    /// Returns the range from Zero to the given value
+    let inline fromZero point =
+        zero () |> of2 point
+
     /// Returns the Zero range
     let inline one () = 
         singleton LanguagePrimitives.GenericOne
@@ -449,7 +453,7 @@ module Range =
         if b.IsEmpty then singleton a.Lo else
         let lo = clampPoint a b.Lo
         let hi = clampPoint a b.Hi
-        Bounds_ (lo,hi)
+        ofBounds lo hi
 
     [<RequireQualifiedAccess>]
     module Sample =
@@ -641,6 +645,15 @@ type Range<'t when 't:comparison> with
     /// Returns true if this range does not exeed the bounds of the given range
     member this.Within that =
        Range.within this that
+
+    /// Clamp the given range to this one
+    member this.Clamp that =
+        Range.clamp this that
+
+    /// Clamp the give point to this range
+    member this.Clamp that =
+        Range.clampPoint this that
+
 
 
 module Operators = 

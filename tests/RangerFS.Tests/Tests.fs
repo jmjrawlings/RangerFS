@@ -12,10 +12,7 @@ open Prelude
 
 module ConstructionTests =
 
-    let make<'t when 't:comparison> name : Test = 
-
-      let type' = typeof<'t>
-      let name = if String.IsNullOrEmpty name then type'.Name else name
+    let ofType<'t when 't:comparison> name : Test = 
             
       testList name [
         
@@ -36,27 +33,33 @@ module ConstructionTests =
                 | [] -> r.IsEmpty
                 | _  -> not r.IsEmpty
 
+          testProp "ofBounds works"
+              <| fun (lo: 't, hi: 't) ->
+                  if lo > hi then
+                    Range.ofBounds lo hi = Range.empty
+                  else
+                    true
       ]
 
 
     [<Tests>]
     let tests = 
         testList "creation" [
-            make<DateTime> ""
-            make<Int16> ""
-            make<Int32> ""
-            make<Int64> ""
-            make<char> ""
-            make<float> ""
-            make<float32> ""
-            make<BoundedInt> "custom"
-            make<int<kilometre>> "uom"
+            ofType<DateTime> "time"
+            ofType<Int16> "int16"
+            ofType<Int32> "int32"
+            ofType<Int64> "int64"
+            ofType<char> "char"
+            ofType<float> "float"
+            ofType<float32> "float32"
+            ofType<BoundedInt> "custom"
+            ofType<int<kilometre>> "uom"
         ]        
 
 
 module LogicTests = 
 
-    let make<'t when 't:comparison> name : Test =
+    let private ofType<'t when 't:comparison> name : Test =
             
         testList name [
 
@@ -88,6 +91,8 @@ module LogicTests =
             testProp "range intersects empty"
                 <| fun (r: 't Range) ->
                     Range.intersects r Range.empty
+                    &&
+                    Range.intersects Range.empty r
 
             testProp "points dont intersect"
                 <| fun (a:'t, b:'t) ->
@@ -143,15 +148,15 @@ module LogicTests =
     [<Tests>]
     let tests= 
         testList "logic" [
-            make<DateTime> "date"
-            make<Int16> "int16"
-            make<Int32> "int32"
-            make<Int64> "int64"
-            make<char> "char"
-            make<float> "float"
-            make<single> "single"
-            make<BoundedInt> "custom"
-            make<int<kilometre>> "uom"
+            ofType<DateTime> "date"
+            ofType<Int16> "int16"
+            ofType<Int32> "int32"
+            ofType<Int64> "int64"
+            ofType<char> "char"
+            ofType<float> "float"
+            ofType<single> "single"
+            ofType<BoundedInt> "custom"
+            ofType<int<kilometre>> "uom"
         ]                
 
 
@@ -160,7 +165,7 @@ module DeltaTests =
     [<Tests>]
     let tests =
 
-        let inline test point delta = 
+        let inline ofType point delta = 
             let range  = Range.ofSize delta point
             let point2 = point + delta
             let size   = Range.size range
@@ -170,11 +175,11 @@ module DeltaTests =
             else size = -delta
 
         testList "delta/create" [
-            testProp "time"  test<DateTime, TimeSpan>
-            testProp "int16" test<Int16, Int16>
-            testProp "int32" test<Int32, Int32>
-            testProp "int64" test<Int64, int64>
-            testProp "measure" test<int<kilometre>, int<kilometre>>
+            testProp "time"    ofType<DateTime, TimeSpan>
+            testProp "int16"   ofType<Int16, Int16>
+            testProp "int32"   ofType<Int32, Int32>
+            testProp "int64"   ofType<Int64, int64>
+            testProp "measure" ofType<int<kilometre>, int<kilometre>>
         ]
 
 module RelationTests = 
@@ -209,6 +214,8 @@ module RelationTests =
              Relation.MeetsStart, Relation.MeetsEnd
              Relation.Within, Relation.Contains
              Relation.OverlapsStart, Relation.OverlapsEnd
+             Relation.Equal, Relation.Equal
+             Relation.Empty, Relation.Empty
             ]
             |> Set.ofSeq
 
@@ -314,7 +321,7 @@ module InlineTests =
 
             testCase "addition" <| fun () ->
                 let a = 2.0 <=> 3.0
-                let b = a + !0.5
+                let b = a + 0.5
                 let c = 2.5 <=> 3.5
                 Expect.equal b c ""
 
@@ -325,9 +332,9 @@ module InlineTests =
                 Expect.equal b c ""
 
             testCase "multiplication" <| fun () ->
-                let a = (0).ToRangeOffset(4)
-                let b =  a * 10
-                Expect.equal b (0 <=> 40) ""
+                let a = -4 <=> 4
+                let b = a * 4
+                Expect.equal b (-16 <=> 16) ""
 
             testCase "divison" <| fun () ->
                 let a = 3 <=> 12
