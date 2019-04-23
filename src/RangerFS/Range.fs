@@ -550,30 +550,6 @@ type Range<'t when 't:comparison> with
 
     static member inline Abs r =
         Range.map1 abs r
-
-    /// Left to right relation
-    static member (=?>) (a,b) = 
-        Range.relation a b
-
-    /// Left to right relation
-    static member (=?>) (a,b) = 
-        Range.relation a (Range.singleton b)
-
-    /// Left to right relation
-    static member (=?>) (a,b) = 
-        Range.relation (Range.singleton a) b
-
-    /// Right to left relation
-    static member (<?=) (b,a) = 
-        Range.relation a b
-
-    /// Right to left relation  
-    static member (<?=) (b,a) = 
-        Range.relation a (Range.singleton b)
-
-    /// Right to left relation
-    static member (<?=) (b,a) = 
-        Range.relation (Range.singleton a) b
     
     /// Map the given function to both bounds of the range
     member this.Map f =
