@@ -20,8 +20,8 @@ A `Range<'t>` represents the (possibly empty) interval between a Lower Bound and
 The available constructors ensure that the invariant of range.Lo <= range.Hi always holds.
 *)
 let r = (0 <=> 100) // {0..100}
-r.Lo // 0
-r.Hi // 100
+printfn "%O has lower bound %d and upper bound %d" r r.Lo r.Hi
+// {0..100} has lower bound 0 and upper bound 100
 
 (**
 # Constructing Ranges
@@ -40,8 +40,9 @@ Range.ofBounds 100 0 = Range.empty // true
 (Range.ofBounds 100 0).IsEmpty // true
 
 (**
-Use `Range.of2` or its equivalent operator `<~>` for order agnostic creation
+For order agnostic creation use `Range.of2` or its equivalent operator `<~>`
 *)
+
 Range.of2 10 0 // {0..10}
 Range.of2 0 10 // {0..10}
 100 <~> 0 // {0..100}
@@ -49,9 +50,11 @@ Range.of2 0 10 // {0..10}
 (** 
 The special case where the lower bound equals the upper bound is referred to as a singleton and can be constructed by
 `Range.singleton` or its equivalent operator `!` *)
+
 Range.singleton 2.5 // {2.5}
 !2.5 // {2.5}
 Range.ofBounds 2.5 2.5 // {2.5}
+(!100).IsSingleton // true
 
 (** We can also construct a range from a sequence of points with `Range.ofSeq` *)
 Range.ofSeq [ 7; 5; -2; -100; 50; 75] // {-2..100}
@@ -62,8 +65,8 @@ Constructing a range from an empty list results in the Empty range.
 Also available through `Range.empty`, the empty range is a natural way to represent the results
 of invalid operations such as the intersection of non-overlapping `Ranges`
 *)
-let r : int Range = Range.ofSeq [] // {}
-Range.isEmpty Range.empty // true
+let fromList : int Range = Range.ofSeq [] // {}
+fromList.IsEmpty // true
 
 (** It is often more convenient to construct a range using a single bound and a size - 
 this can be done with `Range.ofSize` or the equivalent operator `=+>` *)

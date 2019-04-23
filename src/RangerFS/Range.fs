@@ -104,7 +104,7 @@ type Relation =
 [<Struct>]
 [<CustomComparison>]
 [<StructuralEquality>]
-/// A Range representing the values between a Lower and Upper Bound
+/// Represents the interval between a Lower and Upper Bound
 type Range<'t when 't : comparison> = 
     private
     | Empty_
@@ -155,6 +155,7 @@ and IRange<'t when 't:comparison> =
 exception EmptyRangeException  
 
 [<RequireQualifiedAccess>]
+/// Functions to operate on Ranges
 module Range = 
     
     [<Struct>]
@@ -395,9 +396,7 @@ module Range =
     let bind1 (f: 't -> 'u Range) (r: 't Range) : 'u Range = 
         bind f f r
 
-    /// <summary>
-    /// Bisect the range returning the range before and after the given point
-    /// </summary>
+    /// Bisect the first range returning the range before and after the second range
     let bisect (a: 't Range) (b: 't Range) : ('t Range * 't Range) =
         if a.IsEmpty || b.IsEmpty then (empty,empty) else 
 
@@ -611,7 +610,7 @@ type Range<'t when 't:comparison> with
         Range.clampPoint that this
 
 
-
+/// Operators for easy construction
 module Operators = 
     let (<=>) a b = Range.ofBounds a b
     let (<~>) a b = Range.of2 a b
@@ -620,6 +619,7 @@ module Operators =
        
 
 [<Extension>]
+/// Extension methods for ease of use
 type Extensions =
 
     [<Extension>]
@@ -683,3 +683,10 @@ type Extensions =
     /// Buffer the range by the given delta
     static member inline Iterate(this, step:^u) : ^u seq =
         Range.iterate step this
+
+    [<Extension>]
+    /// Alias for Size
+    static member Duration(this : DateTime Range) : TimeSpan =
+        this.Size()
+
+    
