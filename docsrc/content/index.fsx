@@ -19,23 +19,6 @@ The generic type `Range<'t>` allows intervals to be constructed for any type tha
 - `char` 
 - user types
 
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      RangerFS library can be <a href="https://nuget.org/packages/RangerFS">installed from NuGet</a>:
-      <pre>PM> Install-Package RangerFS</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
-
-# A motivating example
-
-
-
-
-
 Using RangerFS with Paket
 ------------------------
 
