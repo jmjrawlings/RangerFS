@@ -1,5 +1,2 @@
-#### 0.7.1 - Thursday, March 14, 2019
-* Removed C# support due to SRTP
-
-#### 0.7.0 - Wednesday, March 13, 2019
-* Extension methods changed to instance methods where possible
+### 0.1.0 - Tuesday, April 23, 2019
+* Initial release

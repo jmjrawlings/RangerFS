@@ -1,1 +1,3 @@
-# RangerFS
+# Ranger
+
+Intervals for F#

@@ -408,7 +408,7 @@ Target.create "All" ignore
   ==> "CopyBinaries"
   ==> "RunTests"
   ==> "GenerateDocs"
-  ==> "NuGet"
+//  ==> "NuGet"
   ==> "All"
 
 "RunTests" ?=> "CleanDocs"
@@ -422,7 +422,7 @@ Target.create "All" ignore
   ==> "Release"
 
 "BuildPackage"
-  ==> "PublishNuget"
+//  ==> "PublishNuget"
   ==> "Release"
 
 Target.runOrDefault "All"
