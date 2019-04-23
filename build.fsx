@@ -425,4 +425,6 @@ Target.create "All" ignore
 //  ==> "PublishNuget"
   ==> "Release"
 
+"All" ==> "Release"
+
 Target.runOrDefault "All"

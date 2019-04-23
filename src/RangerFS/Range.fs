@@ -341,10 +341,7 @@ module Range =
               yield x
               x <- (x + step) }
 
-    /// <summary>
     /// Partition the range into 'n' peices
-    /// <para>partition 3 {0..6.0} = [{0..2.0}; {2.0..4.0}; {4.0..6.0}]</para>
-    /// <summary>
     let inline partition (n: ^u) (r: ^t Range) : ^t Range seq =
         if r.IsEmpty then Seq.empty else
 
@@ -374,10 +371,7 @@ module Range =
     let map1 (f: 't -> 'u) (r: 't Range) : 'u Range = 
         map f f r
 
-    /// <summary>
     /// Returns the union of cross-applying f to the given ranges
-    /// <para>map2 f a b = union [f a.Lo b.Lo; f a.Lo b.Hi; f a.Hi b.Lo; f a.Hi b.Hi]<para>
-    /// <summary>
     let map2 (f: 't -> 't -> 'u) (a: 't Range) (b: 't Range) : 'u Range =
         a |> bind1 (fun a' -> 
             b |> map1 (fun b' ->
@@ -403,10 +397,6 @@ module Range =
 
     /// <summary>
     /// Bisect the range returning the range before and after the given point
-    /// <para>bisect {0..10} {5} = {0..5}, {5..10}</para>
-    /// <para>bisect {0..10} {2..4} = {0..2}, {4..10}</para>
-    /// <para>bisect {3} {3} = {3},{3}</para>
-    /// <para>bisect {0..10} {-3} = {}, {0..10}</para>
     /// </summary>
     let bisect (a: 't Range) (b: 't Range) : ('t Range * 't Range) =
         if a.IsEmpty || b.IsEmpty then (empty,empty) else 
@@ -419,22 +409,14 @@ module Range =
 
         (before, after)
 
-    /// <summary>
     /// Buffer the range by the given delta
-    /// <para>buffer 5 {10..12} = {5..17}</para>
-    /// </summary>
     let inline buffer (delta: ^u) (r: ^t Range) : ^t Range =
         map
             (fun p -> p - delta)
             (fun p -> p + delta)
             r
 
-    /// <summary>
     /// Clamp the given point such to the range
-    /// <para>Clamp {0..10} 4 = 4</para>
-    /// <para>Clamp {0..10} 12 = 10</para>
-    /// <para>Clamp {0..10} -100 = 0</para>
-    /// <summary>
     let clampPoint (point: 't) (a: 't Range) : 't =
         match a with
         | _ when a.IsEmpty -> raise EmptyRangeException
@@ -445,8 +427,6 @@ module Range =
 
     /// <summary>
     /// Clamp the second range such that it does not exceed the first
-    /// <para>Clamp {0..10} {8..12} = {8..10}</para>
-    /// <para>Clamp {-1.5..-0.02} {0.5} = {-0.02}</para>
     /// </summary>
     let clamp (a: 't Range) (b: 't Range) : 't Range =
         if a.IsEmpty then empty else

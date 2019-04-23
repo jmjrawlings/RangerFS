@@ -60,71 +60,11 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
+          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
             Bind(f)
           </code>
-          <div class="tip" id="61">
-            <strong>Signature:</strong> (f:(&#39;t -&gt; Range&lt;&#39;?8022&gt;)) -&gt; Range&lt;&#39;?8022&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L543-543" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Bind the given functions to the bounds of the range</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
-            Bind(fLo, fHi)
-          </code>
-          <div class="tip" id="62">
-            <strong>Signature:</strong> (fLo:(&#39;t -&gt; Range&lt;&#39;?8019&gt;) * fHi:(&#39;t -&gt; Range&lt;&#39;?8019&gt;)) -&gt; Range&lt;&#39;?8019&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L539-539" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Bind the given functions to the bounds of the range</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
-            Bisect(that)
-          </code>
-          <div class="tip" id="63">
-            <strong>Signature:</strong> that:Range&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L559-559" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Bisect the Range at the given point</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
-            Bisect(point)
-          </code>
-          <div class="tip" id="64">
-            <strong>Signature:</strong> point:&#39;t -&gt; Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;<br />
+          <div class="tip" id="65">
+            <strong>Signature:</strong> (f:(&#39;t -&gt; Range&lt;&#39;?7975&gt;)) -&gt; Range&lt;&#39;?7975&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
@@ -132,27 +72,7 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Bisect the Range at the given point</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
-            Cast()
-          </code>
-          <div class="tip" id="65">
-            <strong>Signature:</strong> unit -&gt; IRange&lt;&#39;t&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L594-594" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Cast to the IRange interface</p>
+          <p>Bind the given functions to the bounds of the range</p>
 
 
         </td>
@@ -161,14 +81,114 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
-            Contains(point)
+            Bind(fLo, fHi)
           </code>
           <div class="tip" id="66">
+            <strong>Signature:</strong> (fLo:(&#39;t -&gt; Range&lt;&#39;?7972&gt;) * fHi:(&#39;t -&gt; Range&lt;&#39;?7972&gt;)) -&gt; Range&lt;&#39;?7972&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L551-551" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Bind the given functions to the bounds of the range</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+            Bisect(range)
+          </code>
+          <div class="tip" id="67">
+            <strong>Signature:</strong> range:Range&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L571-571" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Bisect the Range at the given point</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+            Bisect(point)
+          </code>
+          <div class="tip" id="68">
+            <strong>Signature:</strong> point:&#39;t -&gt; Range&lt;&#39;t&gt; * Range&lt;&#39;t&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L567-567" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Bisect the Range at the given point</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+            Clamp(that)
+          </code>
+          <div class="tip" id="69">
+            <strong>Signature:</strong> that:&#39;t -&gt; &#39;t<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L610-610" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Clamp the give point to this range</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+            Clamp(that)
+          </code>
+          <div class="tip" id="70">
+            <strong>Signature:</strong> that:Range&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt;<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L606-606" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Clamp the given range to this one</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+            Contains(point)
+          </code>
+          <div class="tip" id="71">
             <strong>Signature:</strong> point:&#39;t -&gt; bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L586-586" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L598-598" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -180,15 +200,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
-            Contains(that)
+          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+            Contains(range)
           </code>
-          <div class="tip" id="67">
-            <strong>Signature:</strong> that:Range&lt;&#39;t&gt; -&gt; bool<br />
+          <div class="tip" id="72">
+            <strong>Signature:</strong> range:Range&lt;&#39;t&gt; -&gt; bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L582-582" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L594-594" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -200,15 +220,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
             HasRelation(relation, point, inverse)
           </code>
-          <div class="tip" id="68">
+          <div class="tip" id="73">
             <strong>Signature:</strong> (relation:Relation * point:&#39;t * inverse:bool) -&gt; bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L578-578" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L590-590" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -220,15 +240,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
-            HasRelation(relation, that, inverse)
+          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+            HasRelation(relation, range, inverse)
           </code>
-          <div class="tip" id="69">
-            <strong>Signature:</strong> (relation:Relation * that:Range&lt;&#39;t&gt; * inverse:bool) -&gt; bool<br />
+          <div class="tip" id="74">
+            <strong>Signature:</strong> (relation:Relation * range:Range&lt;&#39;t&gt; * inverse:bool) -&gt; bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L574-574" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L586-586" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -240,15 +260,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
             Hi
           </code>
-          <div class="tip" id="70">
+          <div class="tip" id="75">
             <strong>Signature:</strong> &#39;t<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L33-33" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L119-119" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -261,15 +281,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
             IsEmpty
           </code>
-          <div class="tip" id="71">
+          <div class="tip" id="76">
             <strong>Signature:</strong> bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L36-36" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L123-123" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -282,15 +302,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
             IsSingleton
           </code>
-          <div class="tip" id="72">
+          <div class="tip" id="77">
             <strong>Signature:</strong> bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L39-39" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L127-127" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -303,15 +323,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
             Lo
           </code>
-          <div class="tip" id="73">
+          <div class="tip" id="78">
             <strong>Signature:</strong> &#39;t<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L30-30" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L115-115" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -324,15 +344,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
             Map(fLo, fHi)
           </code>
-          <div class="tip" id="74">
-            <strong>Signature:</strong> (fLo:(&#39;t -&gt; &#39;?8016) * fHi:(&#39;t -&gt; &#39;?8016)) -&gt; Range&lt;&#39;?8016&gt;<br />
+          <div class="tip" id="79">
+            <strong>Signature:</strong> (fLo:(&#39;t -&gt; &#39;?7969) * fHi:(&#39;t -&gt; &#39;?7969)) -&gt; Range&lt;&#39;?7969&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L535-535" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L547-547" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -344,15 +364,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
             Map(f)
           </code>
-          <div class="tip" id="75">
-            <strong>Signature:</strong> (f:(&#39;t -&gt; &#39;?8009)) -&gt; Range&lt;&#39;?8009&gt;<br />
+          <div class="tip" id="80">
+            <strong>Signature:</strong> (f:(&#39;t -&gt; &#39;?7962)) -&gt; Range&lt;&#39;?7962&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L523-523" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L535-535" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -364,15 +384,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
             MapHi(f)
           </code>
-          <div class="tip" id="76">
+          <div class="tip" id="81">
             <strong>Signature:</strong> (f:(&#39;t -&gt; &#39;t)) -&gt; Range&lt;&#39;t&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L531-531" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L543-543" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -384,15 +404,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
             MapLo(f)
           </code>
-          <div class="tip" id="77">
+          <div class="tip" id="82">
             <strong>Signature:</strong> (f:(&#39;t -&gt; &#39;t)) -&gt; Range&lt;&#39;t&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L527-527" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L539-539" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -404,15 +424,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
-            Relation(that, inverse)
+          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
+            Relation(point, inverse)
           </code>
-          <div class="tip" id="78">
-            <strong>Signature:</strong> (that:&#39;t * inverse:bool) -&gt; Relation<br />
+          <div class="tip" id="83">
+            <strong>Signature:</strong> (point:&#39;t * inverse:bool) -&gt; Relation<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L570-570" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L582-582" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -424,35 +444,35 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
-            Relation(that, inverse)
+          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
+            Relation(range, inverse)
           </code>
-          <div class="tip" id="79">
-            <strong>Signature:</strong> (that:Range&lt;&#39;t&gt; * inverse:bool) -&gt; Relation<br />
+          <div class="tip" id="84">
+            <strong>Signature:</strong> (range:Range&lt;&#39;t&gt; * inverse:bool) -&gt; Relation<br />
+                                  </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L575-575" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns the Relation from a -&gt; b, or from b -&gt; a if inverse is true</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
+            Union(range)
+          </code>
+          <div class="tip" id="85">
+            <strong>Signature:</strong> range:Range&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L563-563" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns the Relation from a -&gt; b, or from b -&gt; a if inverse is true</p>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
-            Union(that)
-          </code>
-          <div class="tip" id="80">
-            <strong>Signature:</strong> that:Range&lt;&#39;t&gt; -&gt; Range&lt;&#39;t&gt;<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L551-551" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -464,15 +484,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
             Union(point)
           </code>
-          <div class="tip" id="81">
+          <div class="tip" id="86">
             <strong>Signature:</strong> point:&#39;t -&gt; Range&lt;&#39;t&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L547-547" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L559-559" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -484,15 +504,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '82', 82)" onmouseover="showTip(event, '82', 82)">
+          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
             Within(that)
           </code>
-          <div class="tip" id="82">
+          <div class="tip" id="87">
             <strong>Signature:</strong> that:Range&lt;&#39;t&gt; -&gt; bool<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L590-590" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L602-602" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -512,50 +532,12 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '83', 83)" onmouseover="showTip(event, '83', 83)">
+          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
             ( - )(a, b)
           </code>
-          <div class="tip" id="83">
-            <strong>Signature:</strong> (a:Range&lt;^?7972&gt; * b:^?7972) -&gt; Range&lt;^?7973&gt;<br />
-                          <strong>Type parameters:</strong> ^?7973                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L492-492" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_Subtraction</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '84', 84)" onmouseover="showTip(event, '84', 84)">
-            ( - )(a, b)
-          </code>
-          <div class="tip" id="84">
-            <strong>Signature:</strong> (a:Range&lt;^?7968&gt; * b:Range&lt;^?7968&gt;) -&gt; Range&lt;^?7969&gt;<br />
-                          <strong>Type parameters:</strong> ^?7969                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L489-489" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_Subtraction</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '85', 85)" onmouseover="showTip(event, '85', 85)">
-            ( % )(a, b)
-          </code>
-          <div class="tip" id="85">
-            <strong>Signature:</strong> (a:Range&lt;^?7996&gt; * b:^?7996) -&gt; Range&lt;^?7997&gt;<br />
-                          <strong>Type parameters:</strong> ^?7997                      </div>
+          <div class="tip" id="88">
+            <strong>Signature:</strong> (a:Range&lt;^?7931&gt; * b:^?7931) -&gt; Range&lt;^?7932&gt;<br />
+                          <strong>Type parameters:</strong> ^?7932                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L510-510" class="github-link">
@@ -563,18 +545,18 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>op_Modulus</code></p>
+              <p>CompiledName: <code>op_Subtraction</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '86', 86)" onmouseover="showTip(event, '86', 86)">
-            ( % )(a, b)
+          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
+            ( - )(a, b)
           </code>
-          <div class="tip" id="86">
-            <strong>Signature:</strong> (a:Range&lt;^?7992&gt; * b:Range&lt;^?7992&gt;) -&gt; Range&lt;^?7993&gt;<br />
-                          <strong>Type parameters:</strong> ^?7993                      </div>
+          <div class="tip" id="89">
+            <strong>Signature:</strong> (a:Range&lt;^?7927&gt; * b:Range&lt;^?7927&gt;) -&gt; Range&lt;^?7928&gt;<br />
+                          <strong>Type parameters:</strong> ^?7928                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L507-507" class="github-link">
@@ -582,94 +564,56 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>op_Modulus</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '87', 87)" onmouseover="showTip(event, '87', 87)">
-            ( * )(a, b)
-          </code>
-          <div class="tip" id="87">
-            <strong>Signature:</strong> (a:Range&lt;^?7980&gt; * b:^?7980) -&gt; Range&lt;^?7981&gt;<br />
-                          <strong>Type parameters:</strong> ^?7981                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L498-498" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_Multiply</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '88', 88)" onmouseover="showTip(event, '88', 88)">
-            ( * )(a, b)
-          </code>
-          <div class="tip" id="88">
-            <strong>Signature:</strong> (a:Range&lt;^?7976&gt; * b:Range&lt;^?7976&gt;) -&gt; Range&lt;^?7977&gt;<br />
-                          <strong>Type parameters:</strong> ^?7977                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L495-495" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_Multiply</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '89', 89)" onmouseover="showTip(event, '89', 89)">
-            ( / )(a, b)
-          </code>
-          <div class="tip" id="89">
-            <strong>Signature:</strong> (a:Range&lt;^?7988&gt; * b:^?7988) -&gt; Range&lt;^?7989&gt;<br />
-                          <strong>Type parameters:</strong> ^?7989                      </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L504-504" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_Division</code></p>
+              <p>CompiledName: <code>op_Subtraction</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '90', 90)" onmouseover="showTip(event, '90', 90)">
-            ( / )(a, b)
+            ( % )(a, b)
           </code>
           <div class="tip" id="90">
-            <strong>Signature:</strong> (a:Range&lt;^?7984&gt; * b:Range&lt;^?7984&gt;) -&gt; Range&lt;^?7985&gt;<br />
-                          <strong>Type parameters:</strong> ^?7985                      </div>
+            <strong>Signature:</strong> (a:Range&lt;^?7955&gt; * b:^?7955) -&gt; Range&lt;^?7956&gt;<br />
+                          <strong>Type parameters:</strong> ^?7956                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L501-501" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L528-528" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>op_Division</code></p>
+              <p>CompiledName: <code>op_Modulus</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '91', 91)" onmouseover="showTip(event, '91', 91)">
-            ( -?&gt; )(a, b)
+            ( % )(a, b)
           </code>
           <div class="tip" id="91">
-            <strong>Signature:</strong> (a:Range&lt;&#39;?8003&gt; * b:Range&lt;&#39;?8003&gt;) -&gt; Relation<br />
-                                  </div>
+            <strong>Signature:</strong> (a:Range&lt;^?7951&gt; * b:Range&lt;^?7951&gt;) -&gt; Range&lt;^?7952&gt;<br />
+                          <strong>Type parameters:</strong> ^?7952                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L525-525" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+              <p>CompiledName: <code>op_Modulus</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
+            ( * )(a, b)
+          </code>
+          <div class="tip" id="92">
+            <strong>Signature:</strong> (a:Range&lt;^?7939&gt; * b:^?7939) -&gt; Range&lt;^?7940&gt;<br />
+                          <strong>Type parameters:</strong> ^?7940                      </div>
         </td>
         <td class="xmldoc">
                       <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L516-516" class="github-link">
@@ -677,21 +621,78 @@
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           
-              <p>CompiledName: <code>op_MinusQmarkGreater</code></p>
+              <p>CompiledName: <code>op_Multiply</code></p>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '92', 92)" onmouseover="showTip(event, '92', 92)">
+          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+            ( * )(a, b)
+          </code>
+          <div class="tip" id="93">
+            <strong>Signature:</strong> (a:Range&lt;^?7935&gt; * b:Range&lt;^?7935&gt;) -&gt; Range&lt;^?7936&gt;<br />
+                          <strong>Type parameters:</strong> ^?7936                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L513-513" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+              <p>CompiledName: <code>op_Multiply</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
+            ( / )(a, b)
+          </code>
+          <div class="tip" id="94">
+            <strong>Signature:</strong> (a:Range&lt;^?7947&gt; * b:^?7947) -&gt; Range&lt;^?7948&gt;<br />
+                          <strong>Type parameters:</strong> ^?7948                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L522-522" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+              <p>CompiledName: <code>op_Division</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+            ( / )(a, b)
+          </code>
+          <div class="tip" id="95">
+            <strong>Signature:</strong> (a:Range&lt;^?7943&gt; * b:Range&lt;^?7943&gt;) -&gt; Range&lt;^?7944&gt;<br />
+                          <strong>Type parameters:</strong> ^?7944                      </div>
+        </td>
+        <td class="xmldoc">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L519-519" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+              <p>CompiledName: <code>op_Division</code></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
             ( ~- )(a)
           </code>
-          <div class="tip" id="92">
-            <strong>Signature:</strong> a:Range&lt;^?7954&gt; -&gt; Range&lt;^?7954&gt;<br />
+          <div class="tip" id="96">
+            <strong>Signature:</strong> a:Range&lt;^?7913&gt; -&gt; Range&lt;^?7913&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L477-477" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L495-495" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -702,15 +703,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '93', 93)" onmouseover="showTip(event, '93', 93)">
+          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
             ( ~+ )(a)
           </code>
-          <div class="tip" id="93">
-            <strong>Signature:</strong> a:Range&lt;^?7957&gt; -&gt; Range&lt;^?7957&gt;<br />
+          <div class="tip" id="97">
+            <strong>Signature:</strong> a:Range&lt;^?7916&gt; -&gt; Range&lt;^?7916&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L480-480" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L498-498" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -721,15 +722,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
+          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
             ( + )(a, b)
           </code>
-          <div class="tip" id="94">
-            <strong>Signature:</strong> (a:Range&lt;^?7964&gt; * b:^?7964) -&gt; Range&lt;^?7965&gt;<br />
-                          <strong>Type parameters:</strong> ^?7965                      </div>
+          <div class="tip" id="98">
+            <strong>Signature:</strong> (a:Range&lt;^?7923&gt; * b:^?7923) -&gt; Range&lt;^?7924&gt;<br />
+                          <strong>Type parameters:</strong> ^?7924                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L486-486" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L504-504" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -740,15 +741,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
             ( + )(a, b)
           </code>
-          <div class="tip" id="95">
-            <strong>Signature:</strong> (a:Range&lt;^?7960&gt; * b:Range&lt;^?7960&gt;) -&gt; Range&lt;^?7961&gt;<br />
-                          <strong>Type parameters:</strong> ^?7961                      </div>
+          <div class="tip" id="99">
+            <strong>Signature:</strong> (a:Range&lt;^?7919&gt; * b:Range&lt;^?7919&gt;) -&gt; Range&lt;^?7920&gt;<br />
+                          <strong>Type parameters:</strong> ^?7920                      </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L483-483" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L501-501" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -759,34 +760,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
-            ( &lt;?- )(a, b)
-          </code>
-          <div class="tip" id="96">
-            <strong>Signature:</strong> (a:Range&lt;&#39;?8006&gt; * b:Range&lt;&#39;?8006&gt;) -&gt; Relation<br />
-                                  </div>
-        </td>
-        <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L519-519" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
-              <p>CompiledName: <code>op_LessQmarkMinus</code></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '100', 100)" onmouseover="showTip(event, '100', 100)">
             Abs(r)
           </code>
-          <div class="tip" id="97">
-            <strong>Signature:</strong> r:Range&lt;^?8000&gt; -&gt; Range&lt;^?8000&gt;<br />
+          <div class="tip" id="100">
+            <strong>Signature:</strong> r:Range&lt;^?7959&gt; -&gt; Range&lt;^?7959&gt;<br />
                                   </div>
         </td>
         <td class="xmldoc">
-                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L513-513" class="github-link">
+                      <a href="https://github.com/jmjrawlings/RangerFS/tree/master/src/RangerFS/Range.fs#L531-531" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

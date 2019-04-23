@@ -5,8 +5,8 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("RangerFS")>]
 [<assembly: AssemblyProductAttribute("RangerFS")>]
 [<assembly: AssemblyDescriptionAttribute("Intervals for F#")>]
-[<assembly: AssemblyVersionAttribute("0.7.1")>]
-[<assembly: AssemblyFileVersionAttribute("0.7.1")>]
+[<assembly: AssemblyVersionAttribute("0.1.0")>]
+[<assembly: AssemblyFileVersionAttribute("0.1.0")>]
 [<assembly: AssemblyConfigurationAttribute("Release")>]
 do ()
 
@@ -14,6 +14,6 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "RangerFS"
     let [<Literal>] AssemblyProduct = "RangerFS"
     let [<Literal>] AssemblyDescription = "Intervals for F#"
-    let [<Literal>] AssemblyVersion = "0.7.1"
-    let [<Literal>] AssemblyFileVersion = "0.7.1"
+    let [<Literal>] AssemblyVersion = "0.1.0"
+    let [<Literal>] AssemblyFileVersion = "0.1.0"
     let [<Literal>] AssemblyConfiguration = "Release"
