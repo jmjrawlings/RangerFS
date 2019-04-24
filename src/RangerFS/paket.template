@@ -19,7 +19,7 @@ language
 copyright
     Copyright 2017
 tags
-    FSharp dotnetcore intervals csharp dotnet
+    FSharp dotnetcore intervals dotnet
 summary
     Intervals for .NET
 description
